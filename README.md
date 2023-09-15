@@ -10,5 +10,5 @@ A peer assessment system for students’ assignments.
 
 原神，启动！
 
-![keli](.\pic\keli.jpg)
+![keli](./pic/keli.jpg)
 
