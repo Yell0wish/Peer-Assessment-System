@@ -7,6 +7,7 @@ import com.ye.pojo.UserPojo;
 import com.ye.utils.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.util.annotation.Nullable;
 
 import java.util.List;
 
@@ -22,15 +23,14 @@ public class UserService {
         userDao.insert(new UserPojo(email, password_hash));
     }
 
-    public List<UserPojo> selectByEmail(String email){
+    @Nullable
+    public UserPojo selectByEmail(String email){
         // 根据邮箱查询user表
-        List<UserPojo> emails = userDao.selectList(new QueryWrapper<UserPojo>().eq("email", email));
-        return emails;
+        return userDao.selectOne(new QueryWrapper<UserPojo>().eq("email", email));
     }
 
     public UserPojo selectByID(int id){
-        UserPojo userPojo = userDao.selectById(id);
-        return userPojo;
+        return userDao.selectById(id);
     }
 
     public void modifyName(UserPojo userPojo, String newName, int userid){
@@ -41,6 +41,11 @@ public class UserService {
     public void modifyPassword(UserPojo userPojo, String newPassword, int userid){
         userPojo.setPassword(PasswordHash.getInstance().getMD5(newPassword));
         userDao.update(userPojo, new QueryWrapper<UserPojo>().eq("uuid", userid));
+    }
+
+    public void modifyPassword(UserPojo userPojo, String newPassword, String email){
+        userPojo.setPassword(PasswordHash.getInstance().getMD5(newPassword));
+        userDao.update(userPojo, new QueryWrapper<UserPojo>().eq("email", email));
     }
 
     public void modifyIdentity(UserPojo userPojo, int newIdentity, int userid){

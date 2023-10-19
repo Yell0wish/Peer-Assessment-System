@@ -1,4 +1,43 @@
 spring:
+  redis:
+    # Redis本地服务器地址，注意要开启redis服务，即那个redis-server.exe
+    host: 127.0.0.1
+    # Redis服务器端口,默认为6379.若有改动按改动后的来
+    port: 6379
+    #Redis服务器连接密码，默认为空，若有设置按设置的来
+    password: 12345
+    jedis:
+      pool:
+        # 连接池最大连接数，若为负数则表示没有任何限制
+        max-active: 8
+        # 连接池最大阻塞等待时间，若为负数则表示没有任何限制
+        max-wait: -1
+        # 连接池中的最大空闲连接
+        max-idle: 8
+
+
+  #邮箱验证码配置
+  mail:
+    #smtp服务主机  qq邮箱则为smtp.qq.com;163邮箱是smtp.163.com
+    host: smtp.qq.com
+    #服务协议
+    protocol: smtp
+    # 编码集
+    default-encoding: UTF-8
+    #发送邮件的账户
+    username: 3104812631@qq.com
+    #授权码
+    password: zshaenyhyvfvddcj
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+
   datasource:
     username: root
     password: AVaq2218-
@@ -9,6 +48,10 @@ spring:
     multipart:
       max-file-size: 110MB
       max-request-size: 200MB
+
+
+
+
 
 mybatis-plus:
   configuration:

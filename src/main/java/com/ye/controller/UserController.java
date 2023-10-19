@@ -1,6 +1,8 @@
 package com.ye.controller;
 
 import com.ye.pojo.UserPojo;
+import com.ye.service.EmailService;
+import com.ye.service.RedisService;
 import com.ye.service.UserService;
 import com.ye.utils.PasswordHash;
 import com.ye.utils.Result;
@@ -16,35 +18,86 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    RedisService redisService;
+
+    /**
+     * @param email
+     * @param password
+     * @param checkcode
+     * @return
+     */
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public String signup(@RequestParam("email") String email,
-                         @RequestParam("password") String password) {
+                         @RequestParam("password") String password,
+                         @RequestParam("checkcode") String checkcode) {
 
-        // todo 有空加上邮件验证系统
-        List<UserPojo> results = userService.selectByEmail(email);
-        if (!results.isEmpty()) {
+        UserPojo userPojo = userService.selectByEmail(email);
+        if (userPojo == null) {
             return Result.defeat("邮箱已被占用");
         } else {
-            userService.signup(email, password);
-            return Result.success("注册成功");
+            String fromDatabase = (String) redisService.getAndDeleteFromDatabase(email + "signup");
+
+            if (checkcode.equals(fromDatabase)) {
+                userService.signup(email, password);
+                return Result.success("注册成功");
+            } else {
+                return Result.defeat("验证码不正确");
+            }
+
         }
     }
+
+    /**
+     * 注册给用户发邮件
+     *
+     * @param email
+     * @return
+     */
+
+    @RequestMapping(value = "/signupCheckCode", method = RequestMethod.GET)
+    public String signupCheckCode(@RequestParam("email") String email) {
+        UserPojo userPojo = userService.selectByEmail(email);
+        if (userPojo == null) {
+            return Result.defeat("邮箱已被占用");
+        } else {
+            String checkcode = emailService.sendCheckEmail(email);
+            redisService.saveIntoDatabase(email + "signup", checkcode, 10 * 60);
+            return Result.success("已发送验证码");
+        }
+    }
+
+    @RequestMapping(value = "/resetCheckCode", method = RequestMethod.GET)
+    public String resetCheckCode(@RequestParam("email") String email) {
+        UserPojo userPojo = userService.selectByEmail(email);
+        if (userPojo == null) {
+            return Result.defeat("邮箱未注册");
+        } else {
+            String checkcode = emailService.sendCheckEmail(email);
+            redisService.saveIntoDatabase(email + "reset", checkcode, 10 * 60);
+            return Result.success("已发送验证码");
+        }
+    }
+
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(@RequestParam("email") String email,
                         @RequestParam("password") String password) {
 
-        List<UserPojo> results = userService.selectByEmail(email);
-        if (results.size() != 1) {
+        UserPojo userPojo = userService.selectByEmail(email);
+        if (userPojo == null) {
             // 防止邮箱未注册或者注册邮箱数大于1
             return Result.defeat("邮箱或密码错误");
-        } else if (!PasswordHash.getInstance().getMD5(password).equals(results.get(0).getPassword())) {
+        } else if (!PasswordHash.getInstance().getMD5(password).equals(userPojo.getPassword())) {
             // 当密码不匹配的时候
             return Result.defeat("邮箱或密码错误");
         } else {
             // todo token加上时间限制
             Map<String, Object> map = new HashMap<>();
-            map.put("userid", results.get(0).getUserid());
+            map.put("userid", userPojo.getUserid());
             map.put("token", PasswordHash.getInstance().getMD5(email));
             return Result.success("登录成功", map);
         }
@@ -102,6 +155,24 @@ public class UserController {
         } else {
             userService.modifyPassword(userPojo, newPassword, userid);
             return Result.success("成功修改密码");
+        }
+    }
+
+    @RequestMapping(value = "/resetPassword", method = RequestMethod.PUT)
+    public String resetPassword(@RequestParam("email") String email,
+                                @RequestParam("newPassword") String newPassword,
+                                @RequestParam("checkcode") String checkcode) {
+
+        UserPojo userPojo = userService.selectByEmail(email);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!checkcode.equals(redisService.getAndDeleteFromDatabase(email+"reset"))) {
+            return Result.defeat("验证码不正确");
+        } else if (PasswordHash.getInstance().getMD5(newPassword).equals(userPojo.getPassword())) {
+            return Result.defeat("新旧密码不能一致");
+        } else {
+            userService.modifyPassword(userPojo, newPassword, email);
+            return Result.success("成功重置密码");
         }
     }
 

@@ -68,6 +68,21 @@
             <version>3.5.2</version>
         </dependency>
 
+        <!-- 邮箱验证码依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- 集成redis依赖  -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+
+
+
     </dependencies>
 
     <build>
