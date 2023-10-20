@@ -36,7 +36,7 @@ public class UserController {
                          @RequestParam("checkcode") String checkcode) {
 
         UserPojo userPojo = userService.selectByEmail(email);
-        if (userPojo == null) {
+        if (userPojo != null) {
             return Result.defeat("邮箱已被占用");
         } else {
             String fromDatabase = (String) redisService.getAndDeleteFromDatabase(email + "signup");
@@ -61,7 +61,7 @@ public class UserController {
     @RequestMapping(value = "/signupCheckCode", method = RequestMethod.GET)
     public String signupCheckCode(@RequestParam("email") String email) {
         UserPojo userPojo = userService.selectByEmail(email);
-        if (userPojo == null) {
+        if (userPojo != null) {
             return Result.defeat("邮箱已被占用");
         } else {
             String checkcode = emailService.sendCheckEmail(email);
