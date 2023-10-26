@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @TableName(value = "sc")
 public class SCPojo {
     @TableId(value = "uuid", type = IdType.AUTO)
-    private int scid;
+    private int uuid;
 
     @TableField(value = "userID")
     private int userid;

@@ -13,22 +13,20 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "class_source")
-public class ClassSourcePojo {
+@TableName(value = "response_post")
+public class ResponsePostPojo {
     @TableId(value = "uuid", type = IdType.AUTO)
     private int uuid;
 
-    @TableField(value = "classID")
-    private int classid;
+    @TableField(value = "postID")
+    private int postID;
 
-    @TableField(value = "name")
-    private String sourcename;
+    @TableField(value = "userID")
+    private int userID;
+
+    @TableField(value = "information")
+    private String information;
 
     @TableField(value = "time")
     private Date time;
-
-    @TableField(value = "attachment")
-    private byte[] attachment;
-
-
 }

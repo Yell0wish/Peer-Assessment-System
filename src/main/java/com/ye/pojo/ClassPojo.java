@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @TableName(value = "class")
 public class ClassPojo {
     @TableId(value = "uuid", type = IdType.AUTO)
-    private int classid;
+    private int uuid;
 
     @TableField(value = "name")
     private String classname;

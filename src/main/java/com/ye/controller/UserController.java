@@ -3,15 +3,14 @@ package com.ye.controller;
 import com.ye.pojo.UserPojo;
 import com.ye.service.EmailService;
 import com.ye.service.RedisService;
+import com.ye.service.TokenService;
 import com.ye.service.UserService;
 import com.ye.utils.PasswordHash;
 import com.ye.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class UserController {
@@ -23,6 +22,9 @@ public class UserController {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    TokenService tokenService;
 
     /**
      * @param email
@@ -95,25 +97,25 @@ public class UserController {
             // 当密码不匹配的时候
             return Result.defeat("邮箱或密码错误");
         } else {
-            // todo token加上时间限制
             Map<String, Object> map = new HashMap<>();
-            map.put("userid", userPojo.getUserid());
-            map.put("token", PasswordHash.getInstance().getMD5(email));
+            map.put("userid", userPojo.getUuid());
+            map.put("token", tokenService.firstGetToken(email));
             return Result.success("登录成功", map);
         }
     }
 
-    @RequestMapping(value = "/getInformation/{userid}", method = RequestMethod.GET)
-    public String getInformation(@PathVariable("userid") int userid,
+    @RequestMapping(value = "/getInformation", method = RequestMethod.GET)
+    public String getInformation(@RequestParam("userid") int userid,
                                  @RequestParam("token") String token) {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
             Map<String, Object> map = new HashMap<>();
             map.put("userInformation", userPojo);
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
             System.out.println(userPojo.getSchoolCode());
             return Result.success("成功获取信息", map);
         }
@@ -127,15 +129,20 @@ public class UserController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
             // todo 用户名如果全是空格怎么办？
             if (newName.isEmpty()) {
                 return Result.defeat("用户名不能为空");
             }
+            if (newName.equals(userPojo.getUsername())) {
+                return Result.defeat("用户名不能与之前相同");
+            }
             userService.modifyName(userPojo, newName, userid);
-            return Result.success("成功修改用户名");
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            return Result.success("成功修改用户名", map);
         }
     }
 
@@ -148,13 +155,19 @@ public class UserController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else if (!PasswordHash.getInstance().getMD5(oldPassword).equals(userPojo.getPassword())) {
             return Result.defeat("当前密码不正确");
         } else {
+            if (newPassword.equals(oldPassword)) {
+                return Result.defeat("新旧密码不能一致");
+            }
+
             userService.modifyPassword(userPojo, newPassword, userid);
-            return Result.success("成功修改密码");
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            return Result.success("成功修改密码", map);
         }
     }
 
@@ -166,7 +179,7 @@ public class UserController {
         UserPojo userPojo = userService.selectByEmail(email);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!checkcode.equals(redisService.getAndDeleteFromDatabase(email+"reset"))) {
+        } else if (!checkcode.equals(redisService.getAndDeleteFromDatabase(email + "reset"))) {
             return Result.defeat("验证码不正确");
         } else if (PasswordHash.getInstance().getMD5(newPassword).equals(userPojo.getPassword())) {
             return Result.defeat("新旧密码不能一致");
@@ -184,11 +197,20 @@ public class UserController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
+            if (newIdentity != 1 && newIdentity != 2 && newIdentity != 3) {
+                return Result.defeat("新身份不合法");
+            }
+
+            if (newIdentity == userPojo.getIdentity()){
+                return Result.defeat("新旧身份不能一致");
+            }
             userService.modifyIdentity(userPojo, newIdentity, userid);
-            return Result.success("成功修改身份");
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            return Result.success("成功修改身份", map);
         }
     }
 
@@ -200,11 +222,17 @@ public class UserController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
+            if (newSchool.equals(userPojo.getSchool())){
+                return Result.defeat("新旧学校不能一致");
+            }
+
             userService.modifySchool(userPojo, newSchool, userid);
-            return Result.success("成功修改学校");
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            return Result.success("成功修改学校", map);
         }
     }
 

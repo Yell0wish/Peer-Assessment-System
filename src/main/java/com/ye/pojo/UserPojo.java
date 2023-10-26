@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @TableName(value = "user")
 public class UserPojo {
     @TableId(value = "uuid", type = IdType.AUTO)
-    private int userid;
+    private int uuid;
 
     @TableField(value = "name")
     private String username;
@@ -37,7 +37,7 @@ public class UserPojo {
     public UserPojo(String email, String password){
         this.email = email;
         this.password = password;
-        this.userid = 0;
+        this.uuid = 0;
         this.identity = 3;
         this.username = "用户";
     }

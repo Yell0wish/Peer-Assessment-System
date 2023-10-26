@@ -50,10 +50,10 @@ public class SCController {
             } else if (classPojo.getUserid() == userid) { //申请加入者就是拥有者
                 return Result.defeat("您是班级拥有者");
             } else {
-                if (scService.studentIsInclass(classPojo.getClassid(), userid)){ // 已经加入班级
+                if (scService.studentIsInclass(classPojo.getUuid(), userid)){ // 已经加入班级
                     return Result.defeat("您已在班级中");
                 } else {
-                    scService.attendClass(classPojo.getClassid(), userid);
+                    scService.attendClass(classPojo.getUuid(), userid);
                     return Result.success("您成功加入班级");
                 }
             }

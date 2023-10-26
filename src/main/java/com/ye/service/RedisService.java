@@ -25,6 +25,11 @@ public class RedisService {
         valueOperations.set(key, value, time, TimeUnit.SECONDS);
     }
 
+    public void saveIntoDatabase(Object key, Object value){
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(key, value);
+    }
+
 
     @Nullable
     public Object getFromDatabase(Object key){
@@ -35,6 +40,10 @@ public class RedisService {
     public void deleteFromDatabase(Object key){
         ValueOperations valueOperations = redisTemplate.opsForValue();
         valueOperations.getOperations().delete(key);
+    }
+
+    public Number getTTL(String key){
+        return redisTemplate.getExpire(key);
     }
 
 

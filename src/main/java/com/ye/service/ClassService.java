@@ -3,13 +3,10 @@ package com.ye.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ye.dao.ClassDao;
 import com.ye.pojo.ClassPojo;
-import com.ye.pojo.ClassSourcePojo;
 import com.ye.utils.RandomProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -25,7 +22,7 @@ public class ClassService {
         classPojo.setMaxNum(500);
         classPojo.setUserid(userid);
         classDao.insert(classPojo);
-        return classPojo.getClassid();
+        return classPojo.getUuid();
     }
 
     public ClassPojo selectClassByID(int classid) {
@@ -39,8 +36,8 @@ public class ClassService {
     }
 
     public void getAccessCode(ClassPojo classPojo) {
-        classPojo.setAccessCode(RandomProduct.generateAccessCode(classPojo.getClassid()));
-        classDao.update(classPojo, new QueryWrapper<ClassPojo>().eq("uuid", classPojo.getClassid()));
+        classPojo.setAccessCode(RandomProduct.generateAccessCode(classPojo.getUuid()));
+        classDao.update(classPojo, new QueryWrapper<ClassPojo>().eq("uuid", classPojo.getUuid()));
     }
 
     public ClassPojo selectClassByAccessCode(String accessCode){
