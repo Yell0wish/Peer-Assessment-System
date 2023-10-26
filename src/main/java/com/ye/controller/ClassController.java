@@ -3,8 +3,8 @@ package com.ye.controller;
 import com.ye.pojo.ClassPojo;
 import com.ye.pojo.UserPojo;
 import com.ye.service.ClassService;
+import com.ye.service.TokenService;
 import com.ye.service.UserService;
-import com.ye.utils.PasswordHash;
 import com.ye.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +24,9 @@ public class ClassController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    TokenService tokenService;
+
     // 创建班级
     @RequestMapping(value = "/createClass", method = RequestMethod.POST)
     public String createClass(@RequestParam("userid") int userid,
@@ -32,12 +35,14 @@ public class ClassController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
             int classid = classService.createClass(userid, className);
             Map<String, Object> map = new HashMap<>();
             map.put("classid", classid);
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
             return Result.success("成功创建班级", map);
         }
     }
@@ -51,7 +56,7 @@ public class ClassController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
             ClassPojo classPojo = classService.selectClassByID(classid);
@@ -61,10 +66,11 @@ public class ClassController {
                 return Result.defeat("班级非该用户所有");
             } else {
                 if (classPojo.getAccessCode() == null || classPojo.getAccessCode().isEmpty()) {
-                    classService.getAccessCode(classPojo);
+                    classService.generateAccessCode(classPojo);
                 }
                 Map<String, Object> map = new HashMap<>();
                 map.put("accessCode", classPojo.getAccessCode());
+                map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
                 return Result.success("成功获取邀请码", map);
             }
         }
@@ -79,18 +85,18 @@ public class ClassController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
             List<ClassPojo> classPojos = classService.selectAllTeachingClasses(userid);
 
             Map<String, Object> map = new HashMap<>();
             map.put("classes", classPojos);
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
             return Result.success("成功获取信息", map);
         }
     }
 
-    // todo 删除课程
 
     @RequestMapping(value = "/deleteTeachingClass", method = RequestMethod.DELETE)
     public String deleteTeachingClass(@RequestParam("userid") int userid,
@@ -100,7 +106,7 @@ public class ClassController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
             ClassPojo classPojo = classService.selectClassByID(classid);
@@ -108,7 +114,9 @@ public class ClassController {
                 return Result.defeat("课程不存在");
             } else if (classPojo.getUserid() == userid) {
                 classService.deleteTeachingClass(classid);
-                return Result.success("您已成功删除班级");
+                Map<String, Object> map = new HashMap<>();
+                map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+                return Result.success("您已成功删除班级", map);
             } else {
                 return Result.defeat("您不是班级拥有者");
             }

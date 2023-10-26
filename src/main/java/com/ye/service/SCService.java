@@ -2,6 +2,7 @@ package com.ye.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ye.dao.SCDao;
+import com.ye.pojo.ClassInformationPublicPojo;
 import com.ye.pojo.SCPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,12 @@ public class SCService {
         scDao.delete(new QueryWrapper<SCPojo>().eq("userID", studentid).eq("classID", classid));
     }
 
+    public List<ClassInformationPublicPojo> getAttendedCoursePublcInformation(int userid){
+        return scDao.getAttendedCoursePublcInformation(userid);
+    }
+
+    public List<String> getAttendeeList(int classid) {
+        return scDao.getAttendeeList(classid);
+    }
 
 }

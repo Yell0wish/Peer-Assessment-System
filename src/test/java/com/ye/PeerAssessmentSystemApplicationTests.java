@@ -47,8 +47,8 @@ class PeerAssessmentSystemApplicationTests {
 //        System.out.println(a.equals(null));
         //System.out.println(redisService.getAndDeleteFromDatabase("21301113@bjtu.edu.cnreset"));
         //System.out.println(System.currentTimeMillis());
-        redisService.saveIntoDatabase("1", "1", 100);
-        System.out.println(redisService.getTTL("1"));
+        //System.out.println(scService.getAttendedCoursePublcInformation(10011));
+        System.out.println(scService.getAttendeeList(12));
 
     }
 

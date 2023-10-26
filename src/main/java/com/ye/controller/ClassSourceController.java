@@ -5,9 +5,11 @@ import com.ye.pojo.FilePojo;
 import com.ye.pojo.UserPojo;
 import com.ye.service.ClassService;
 import com.ye.service.ClassSourceService;
+import com.ye.service.TokenService;
 import com.ye.service.UserService;
 import com.ye.utils.PasswordHash;
 import com.ye.utils.Result;
+import org.apache.el.parser.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,9 @@ public class ClassSourceController {
     @Autowired
     ClassSourceService classSourceService;
 
+    @Autowired
+    TokenService tokenService;
+
     @RequestMapping(value = "/addClassSource", method = RequestMethod.POST)
     public String addClassSource(@RequestParam("userid") int userid,
                                  @RequestParam("token") String token,
@@ -44,7 +49,7 @@ public class ClassSourceController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
             ClassPojo classPojo = classService.selectClassByID(classid);
@@ -72,7 +77,7 @@ public class ClassSourceController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return ResponseEntity.badRequest().body("用户ID不存在".getBytes());
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return ResponseEntity.badRequest().body("token不正确".getBytes());
         } else {
             ClassPojo classPojo = classService.selectClassByID(classid);

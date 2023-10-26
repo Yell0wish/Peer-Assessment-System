@@ -244,11 +244,18 @@ public class UserController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
+            if (newSchoolCode.equals(userPojo.getSchoolCode())){
+                return Result.defeat("新旧学校不能一致");
+            }
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+
             userService.modifySchoolCode(userPojo, newSchoolCode, userid);
-            return Result.success("成功修改学号");
+            return Result.success("成功修改学号", map);
         }
     }
 
@@ -260,7 +267,7 @@ public class UserController {
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
-        } else if (!token.equals(PasswordHash.getInstance().getMD5(userPojo.getEmail()))) {
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else if (!PasswordHash.getInstance().getMD5(password).equals(userPojo.getPassword())) {
             return Result.defeat("当前密码不正确");
@@ -270,5 +277,6 @@ public class UserController {
         }
     }
 
+    // 增加用户头像
 
 }

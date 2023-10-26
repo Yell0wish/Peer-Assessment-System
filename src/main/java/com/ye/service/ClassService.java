@@ -2,10 +2,12 @@ package com.ye.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ye.dao.ClassDao;
+import com.ye.dao.ClassSourceDao;
 import com.ye.pojo.ClassPojo;
 import com.ye.utils.RandomProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.util.annotation.Nullable;
 
 import java.util.List;
 
@@ -21,10 +23,12 @@ public class ClassService {
         classPojo.setClassname(className);
         classPojo.setMaxNum(500);
         classPojo.setUserid(userid);
+        classPojo.setAccessCode(RandomProduct.generateAccessCode(classPojo.getUuid()));
         classDao.insert(classPojo);
         return classPojo.getUuid();
     }
 
+    @Nullable
     public ClassPojo selectClassByID(int classid) {
         return classDao.selectById(classid);
     }
@@ -35,7 +39,7 @@ public class ClassService {
         // return  classDao.selectAllClasses(userid);
     }
 
-    public void getAccessCode(ClassPojo classPojo) {
+    public void generateAccessCode(ClassPojo classPojo) {
         classPojo.setAccessCode(RandomProduct.generateAccessCode(classPojo.getUuid()));
         classDao.update(classPojo, new QueryWrapper<ClassPojo>().eq("uuid", classPojo.getUuid()));
     }
