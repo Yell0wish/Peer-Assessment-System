@@ -21,8 +21,8 @@ public class ClassSourcePojo {
     @TableField(value = "classID")
     private int classid;
 
-    @TableField(value = "name")
-    private String sourcename;
+    @TableField(value = "name", exist = true)
+    private String name;
 
     @TableField(value = "time")
     private Date time;

@@ -25,8 +25,8 @@ public class TokenService {
 
     @Nullable
     public String getAndUpdateToken(String email){
-        Number resttime = redisService.getTTL(email + "token");
-        if (resttime.longValue() > 0 && resttime.longValue() <= 10 * 60) { // 重新换一个token
+        Number restTime = redisService.getTTL(email + "token");
+        if (restTime.longValue() > 0 && restTime.longValue() <= 10 * 60) { // 重新换一个token
             String newToken = generateToken(email);
             storeToken(email, newToken);
             return newToken;

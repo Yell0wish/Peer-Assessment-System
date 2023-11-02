@@ -27,6 +27,9 @@ public class HomeworkPojo {
     @TableField(value = "content")
     private String content;
 
+    @TableField(value = "attachment_name")
+    private String attachmentName;
+
     @TableField(value = "attachment")
     private byte[] attachment;
 

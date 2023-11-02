@@ -1,5 +1,6 @@
 package com.ye.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ye.dao.ClassSourceDao;
 import com.ye.pojo.ClassSourcePojo;
 import com.ye.pojo.FilePojo;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ClassSourceService {
@@ -27,7 +29,7 @@ public class ClassSourceService {
 
         ClassSourcePojo classSourcePojo = new ClassSourcePojo();
         classSourcePojo.setClassid(classid);
-        classSourcePojo.setSourcename(sourceName);
+        classSourcePojo.setName(sourceName);
         classSourcePojo.setAttachment(file);
 
         classSourceDao.insert(classSourcePojo);
@@ -35,5 +37,9 @@ public class ClassSourceService {
 
     public FilePojo getResource(int sourceid){
         return classSourceDao.getFile(sourceid);
+    }
+
+    public List<ClassSourcePojo> getResourceList(int classid) {
+        return classSourceDao.selectList(new QueryWrapper<ClassSourcePojo>().select("uuid", "classid", "name", "time").eq("classID", classid));
     }
 }

@@ -2,12 +2,16 @@ package com.ye;
 
 import com.ye.pojo.FilePojo;
 import com.ye.service.*;
+import com.ye.utils.Result;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
@@ -48,8 +52,17 @@ class PeerAssessmentSystemApplicationTests {
         //System.out.println(redisService.getAndDeleteFromDatabase("21301113@bjtu.edu.cnreset"));
         //System.out.println(System.currentTimeMillis());
         //System.out.println(scService.getAttendedCoursePublcInformation(10011));
-        System.out.println(scService.getAttendeeList(12));
-
+//        System.out.println(scService.getAttendeeList(12));
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Date submitTime = null, correctTime = null;
+//        try {
+//            submitTime =  sdf.parse("yyyy-MM-dd HH:mm:ss");
+//        } catch (Exception e) {
+//            System.out.println("haha");
+//        }
+        String input = "fdsa";
+        String[] parts = input.split(";");
+        System.out.println(Arrays.toString(parts));
     }
 
 }
