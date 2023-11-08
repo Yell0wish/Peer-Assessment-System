@@ -48,7 +48,7 @@
         </el-form-item>
       </el-tooltip>
         <div style="float: left">
-          <el-button size="medium" :loading="loading" type="primary" @click.native.prevent="handleLogin1">
+          <el-button size="medium" :loading="loading" type="primary" @click.native.prevent="handleLogin">
             {{ $t('login.logIn') }}
           </el-button>
         </div>
@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import {validEmail, validUsername} from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
 
@@ -103,11 +103,11 @@ export default {
   components: { LangSelect, SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-      // if (!validUsername(value)) {
-      //   callback(new Error('Please enter the correct user name'))
-      // } else {
-      //   callback()
-      // }
+      if (!validEmail(value)) {
+        callback(new Error('Please enter the correct user name'))
+      } else {
+        callback()
+      }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
@@ -118,7 +118,7 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
+        username: '2130XXXX@bjtu.edu.cn',
         password: '111111'
       },
       loginForm1: {
@@ -224,7 +224,7 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm1)
+          this.$store.dispatch('user/mylogin', this.loginForm)
             .then(() => {
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false

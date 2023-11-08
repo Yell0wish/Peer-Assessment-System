@@ -8,6 +8,14 @@ export function login(data) {
   })
 }
 
+export function mylogin(data) {
+  return request({
+    url: '/login',
+    method: 'post',
+    data
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/vue-element-admin/user/info',
