@@ -39,6 +39,9 @@ public class ClassController {
         } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
+            if(className.isEmpty()){
+                return Result.defeat("课程名不能为空");
+            }
             int classid = classService.createClass(userid, className);
             Map<String, Object> map = new HashMap<>();
             map.put("classid", classid);

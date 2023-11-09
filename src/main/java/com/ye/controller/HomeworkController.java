@@ -1,11 +1,7 @@
 package com.ye.controller;
 
-import com.ye.pojo.ClassPojo;
-import com.ye.pojo.UserPojo;
-import com.ye.service.ClassService;
-import com.ye.service.HomeworkService;
-import com.ye.service.TokenService;
-import com.ye.service.UserService;
+import com.ye.pojo.*;
+import com.ye.service.*;
 import com.ye.utils.Result;
 import org.apache.el.parser.Token;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.feed.AbstractRssFeedView;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -24,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,6 +38,9 @@ public class HomeworkController {
 
     @Autowired
     ClassService classService;
+
+    @Autowired
+    SCService scService;
 
     @RequestMapping(value = "/addHomework", method = RequestMethod.POST)
     public String addHomework(@RequestParam("userid") int userid,
@@ -68,7 +70,7 @@ public class HomeworkController {
                 if (!attachment.isEmpty() && attachmentName.isEmpty()) {
                     return Result.defeat("附件名不能为空");
                 }
-                    if (!attachmentName.isEmpty() && attachment.isEmpty()) {
+                if (!attachmentName.isEmpty() && attachment.isEmpty()) {
                     return Result.defeat("附件内容不能为空");
                 }
                 if (attachmentName.isEmpty() && content.isEmpty()) {
@@ -118,4 +120,115 @@ public class HomeworkController {
             }
         }
     }
+
+    @RequestMapping(value = "/getHomeworkList", method = RequestMethod.GET)
+    public String getHomeworkList(@RequestParam("userid") int userid,
+                                  @RequestParam("token") String token,
+                                  @RequestParam("classid") int classid) {
+
+        UserPojo userPojo = userService.selectByID(userid);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
+            return Result.defeat("token不正确");
+        } else {
+            ClassPojo classPojo = classService.selectClassByID(classid);
+            if (classPojo == null) {
+                return Result.defeat("课程不存在");
+            }
+            if (classPojo.getUserid() != userid && !scService.studentIsInclass(classid, userid)) {
+                return Result.defeat("不在课程中，无权访问");
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            map.put("homeworkList", homeworkService.getHomeworkList(classid));
+            return Result.success("已成功获取作业列表", map);
+        }
+    }
+
+    @RequestMapping(value = "/getHomeworkDetails", method = RequestMethod.GET)
+    public String getHomeworkDetails(@RequestParam("userid") int userid,
+                                     @RequestParam("token") String token,
+                                     @RequestParam("classid") int classid,
+                                     @RequestParam("homeworkid") int homeworkid) {
+
+        UserPojo userPojo = userService.selectByID(userid);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
+            return Result.defeat("token不正确");
+        } else {
+            ClassPojo classPojo = classService.selectClassByID(classid);
+            if (classPojo == null) {
+                return Result.defeat("课程不存在");
+            }
+            if (classPojo.getUserid() != userid && !scService.studentIsInclass(classid, userid)) {
+                return Result.defeat("不在课程中，无权访问");
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            map.put("homeworkDetails", homeworkService.getHomeworkDetails(homeworkid));
+            return Result.success("已成功获取作业详细信息", map);
+        }
+    }
+
+    @RequestMapping(value = "/getHomeworkAttachment", method = RequestMethod.GET)
+    public String getResource(HttpServletResponse response,
+                              @RequestParam("userid") int userid,
+                              @RequestParam("token") String token,
+                              @RequestParam("classid") int classid,
+                              @RequestParam("homeworkid") int homeworkid) throws IOException {
+
+        UserPojo userPojo = userService.selectByID(userid);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
+            return Result.defeat("token不正确");
+        } else {
+            ClassPojo classPojo = classService.selectClassByID(classid);
+            if (classPojo == null) {
+                return Result.defeat("课程不存在");
+            } else if (classPojo.getUserid() == userid || scService.studentIsInclass(classid, userid)) { // 正常操作
+                HomeworkPojo homeworkAttachment = homeworkService.getHomeworkAttachment(homeworkid);
+                if (homeworkAttachment != null && homeworkAttachment.getAttachment() != null) {
+                    return Result.success(homeworkAttachment.getAttachmentName(), homeworkAttachment.getAttachment(), response);
+                } else {
+                    return Result.defeat("无对应资源内容");
+                }
+            } else {
+                return Result.defeat("您不在班级中");
+            }
+        }
+    }
+
+    @RequestMapping(value = "/deleteHomework", method = RequestMethod.DELETE)
+    public String deleteHomework(@RequestParam("userid") int userid,
+                                 @RequestParam("token") String token,
+                                 @RequestParam("classid") int classid,
+                                 @RequestParam("homeworkid") int homeworkid) {
+
+        UserPojo userPojo = userService.selectByID(userid);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
+            return Result.defeat("token不正确");
+        } else {
+            ClassPojo classPojo = classService.selectClassByID(classid);
+            if (classPojo == null) {
+                return Result.defeat("课程不存在");
+            } else if (classPojo.getUserid() == userid) { //申请加入者就是拥有者
+                // 可以删除
+                if (homeworkService.deleteHomework(homeworkid)) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+                    return Result.success("您已成功删除作业", map);
+                } else {
+                    return Result.defeat("作业不存在，删除作业失败");
+                }
+            } else {
+                return Result.defeat("您不是班级拥有者");
+            }
+        }
+    }
+
 }

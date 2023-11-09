@@ -36,6 +36,11 @@ class PeerAssessmentSystemApplicationTests {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    HomeworkService homeworkService;
+    @Autowired
+    SubmitService submitService;
     @Test
     void contextLoads() {
         //userService.signup("丁真", "雪豹");
@@ -60,9 +65,12 @@ class PeerAssessmentSystemApplicationTests {
 //        } catch (Exception e) {
 //            System.out.println("haha");
 //        }
-        String input = "fdsa";
-        String[] parts = input.split(";");
-        System.out.println(Arrays.toString(parts));
+//        String input = "fdsa";
+//        String[] parts = input.split(";");
+//        System.out.println(Arrays.toString(parts));
+
+        System.out.println(homeworkService.isHomeworkTeacher(10, 10007));
+
     }
 
 }

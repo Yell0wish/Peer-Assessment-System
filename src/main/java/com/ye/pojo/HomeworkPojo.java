@@ -43,5 +43,5 @@ public class HomeworkPojo {
     private Date correctTime;
 
     @TableField(value = "score_method")
-    private String score_method;
+    private String scoreMethod;
 }
