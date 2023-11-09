@@ -6,9 +6,9 @@
 
 A peer assessment system for students’ assignments.
 
-蹦蹦炸弹！！！！！！！！！！
 
-原神，启动！
 
-![keli](./pic/keli.jpg)
+### 鹰酱可爱捏~
+
+![image-20231109214349914](./README/image-20231109214349914.png)
 
