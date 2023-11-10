@@ -8,9 +8,9 @@
     </el-row>
     <el-tabs v-model="activeTab">
       <el-tab-pane label="我教的课" name="teaching">
-        <div>
+        <div >
           <div v-if="visibleTeachingCards.length > 0">
-            <class-card :cards-data="visibleTeachingCards" />
+            <teaching-class-card :cards-data="visibleTeachingCards" />
           </div>
           <el-pagination
             v-model="currentPageTeaching"
@@ -25,7 +25,7 @@
       <el-tab-pane label="我听的课" name="listening">
         <div>
           <div v-if="visibleListeningCards.length > 0">
-            <class-card :cards-data="visibleListeningCards" />
+            <studying-class-card :cards-data="visibleListeningCards" />
           </div>
           <el-pagination
             v-model="currentPageListening"
@@ -60,11 +60,12 @@
 </template>
 
 <script>
-import ClassCard from "./components/ClassCard.vue";
+import TeachingClassCard from "./components/TeachingClassCard.vue";
+import StudyingClassCard from "./components/StudyingClassCard.vue";
 import {mapGetters} from "vuex";
 export default {
   name: 'ClassList',
-  components: { ClassCard },
+  components: { StudyingClassCard, TeachingClassCard },
   data() {
     return {
       activeTab: 'teaching', // 默认展示"我教的课"
@@ -74,7 +75,7 @@ export default {
       classname: '',
       currentPageTeaching: 1,
       currentPageListening: 1,
-      pageSize: 3,
+      pageSize: 4,
       teachingCards: [
         { title: "我教的课1" },
         { title: "我教的课2" },
@@ -86,6 +87,7 @@ export default {
         { title: "我听的课2" },
         { title: "我听的课3" },
         { title: "我听的课4" },
+        { title: "我听的课5" },
       ]
     };
   },

@@ -31,7 +31,7 @@ module.exports = [
     type: 'post',
     response: config => {
       const { username } = config.body
-      const token = tokens['editor']
+      const token = tokens['admin']
 
       // mock error
       if (!token) {

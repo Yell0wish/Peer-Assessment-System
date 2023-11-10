@@ -93,18 +93,6 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/classList',
-    component: Layout,
-    children: [
-      {
-        path: 'classList',
-        component: () => import('@/views/classList/index'),
-        name: 'Dashboard',
-        meta: { title: '课程班级', icon: 'dashboard', affix: true }
-      }
-    ]
-  },
   // {
   //   path: '/documentation',
   //   component: Layout,
@@ -151,6 +139,47 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/classList',
+    component: Layout,
+    children: [
+      {
+        path: 'classList',
+        component: () => import('@/views/classList/index'),
+        name: 'Course',
+        meta: { title: '课程班级', icon: 'education', affix: true }
+      },
+      {
+        path: '/teachingClass/:id',
+        component: () => import('@/views/class-info/teacher/index'),
+        name: 'CourseDetail',
+        meta: { title: '课程详情', noCache: true, activeMenu: '/classList'},
+        hidden: true,
+      },
+      {
+        path: '/studyingCLass/:id',
+        component: () => import('@/views/class-info/student/index'),
+        name: 'CourseDetail',
+        meta: { title: '课程详情', noCache: true, activeMenu: '/classList'},
+        hidden: true,
+      },
+      {
+        path: '/assignHomework',
+        component: () => import('@/views/class-info/teacher/AssignHomework'),
+        name: 'AssignHomework',
+        meta: { title: '发布作业', noCache: true, activeMenu: '/classList'},
+        hidden: true,
+      },
+      {
+        path: '/commitHomework',
+        component: () => import('@/views/class-info/student/CommitHomework'),
+        name: 'CommitHomework',
+        meta: { title: '提交作业', noCache: true, activeMenu: '/classList'},
+        hidden: true,
+      },
+    ]
+  },
+
   // {
   //   path: '/permission',
   //   component: Layout,
