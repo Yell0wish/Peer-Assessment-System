@@ -33,7 +33,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      mylogin({ username: username.trim(), password: password }).then(response => {
+      login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -44,7 +44,7 @@ const actions = {
     })
   },
 
-  // user mylogin
+  // user login by Zoransy
   mylogin({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
@@ -59,6 +59,26 @@ const actions = {
     })
   },
 
+  // reset user password by Zoransy
+  resetPassword({ commit }, passwordInfo) {
+    const { email, newPassword, emailCode } = passwordInfo;
+    return new Promise((resolve, reject) => {
+      // 调用修改密码的 API，这里假设有一个名为 changePassword 的 API 方法
+      resetPassword({ email: email.trim(), newPassword, emailCode }).then(response => {
+        const { data } = response;
+        // 在修改密码成功时，可能会返回一些信息，你可以根据实际情况进行处理
+        // commit('SET_PASSWORD_CHANGE_STATUS', true); // 可能需要设置一个状态
+        resolve();
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  },
+
+  register({ commit }, userInfo) {
+    const { email, password} = userInfo;
+
+  },
 
   // get user info
   getInfo({ commit, state }) {

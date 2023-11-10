@@ -93,6 +93,18 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/classList',
+    component: Layout,
+    children: [
+      {
+        path: 'classList',
+        component: () => import('@/views/classList/index'),
+        name: 'Dashboard',
+        meta: { title: '课程班级', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
   // {
   //   path: '/documentation',
   //   component: Layout,

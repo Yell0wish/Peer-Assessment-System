@@ -16,6 +16,22 @@ export function mylogin(data) {
   })
 }
 
+export function resetPassword(data) {
+  return request({
+    url: '/resetPassword',
+    method: 'put',
+    data
+  })
+}
+
+export function register(data) {
+  return request({
+    url: '/signup',
+    method: 'post',
+    data
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/vue-element-admin/user/info',
