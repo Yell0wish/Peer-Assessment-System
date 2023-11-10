@@ -6,19 +6,38 @@
         <el-button @click="showCreateDialog" type="primary">创建班级</el-button>
       </el-row>
     </el-row>
-    <div>
-      <div v-if="visibleCards.length > 0">
-        <class-card :cards-data="visibleCards" />
-      </div>
-      <el-pagination
-        v-model="currentPage"
-        :page-size="pageSize"
-        :total="cardData.length"
-        layout="total,  prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handlePageChange"
-      />
-    </div>
+    <el-tabs v-model="activeTab">
+      <el-tab-pane label="我教的课" name="teaching">
+        <div>
+          <div v-if="visibleTeachingCards.length > 0">
+            <class-card :cards-data="visibleTeachingCards" />
+          </div>
+          <el-pagination
+            v-model="currentPageTeaching"
+            :page-size="pageSize"
+            :total="teachingCards.length"
+            layout="total, prev, pager, next, jumper"
+            @size-change="handleTeachingSizeChange"
+            @current-change="handleTeachingPageChange"
+          />
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="我听的课" name="listening">
+        <div>
+          <div v-if="visibleListeningCards.length > 0">
+            <class-card :cards-data="visibleListeningCards" />
+          </div>
+          <el-pagination
+            v-model="currentPageListening"
+            :page-size="pageSize"
+            :total="listeningCards.length"
+            layout="total, prev, pager, next, jumper"
+            @size-change="handleListeningSizeChange"
+            @current-change="handleListeningPageChange"
+          />
+        </div>
+      </el-tab-pane>
+    </el-tabs>
     <el-dialog :visible.sync="inviteDialogVisible" title="请输入班级邀请码">
       <el-row style="margin-bottom: 20px;">
         <el-input v-model="inviteCode" placeholder="请输入班级邀请码"></el-input>
@@ -48,48 +67,57 @@ export default {
   components: { ClassCard },
   data() {
     return {
+      activeTab: 'teaching', // 默认展示"我教的课"
       inviteDialogVisible: false,
       createDialogVisible: false,
       inviteCode: '',
       classname: '',
-      currentPage: 1,
+      currentPageTeaching: 1,
+      currentPageListening: 1,
       pageSize: 3,
-      cardData: [
-        {
-          title: "测试班级1"
-        },
-        {
-          title: "测试班级2"
-        },
-        {
-          title: "测试班级3"
-        },
-        {
-          title: "测试班级4"
-        },
-        {
-          title: "测试班级5"
-        },
+      teachingCards: [
+        { title: "我教的课1" },
+        { title: "我教的课2" },
+        { title: "我教的课3" },
+        { title: "我教的课4" },
+      ],
+      listeningCards: [
+        { title: "我听的课1" },
+        { title: "我听的课2" },
+        { title: "我听的课3" },
+        { title: "我听的课4" },
       ]
-    }
+    };
   },
   computed: {
-    visibleCards() {
-      const start = (this.currentPage - 1) * this.pageSize;
+    visibleTeachingCards() {
+      const start = (this.currentPageTeaching - 1) * this.pageSize;
       const end = start + this.pageSize;
-      return this.cardData.slice(start, end);
+      return this.teachingCards.slice(start, end);
+    },
+    visibleListeningCards() {
+      const start = (this.currentPageListening - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.listeningCards.slice(start, end);
     }
   },
   created() {
 
   },
   methods: {
-    handleSizeChange(val) {
+    handleTeachingSizeChange(val) {
       this.pageSize = val;
-      this.currentPage = 1; // Reset to the first page when changing page size
+      this.currentPageTeaching = 1; // Reset to the first page when changing page size
     },
-    handlePageChange(val) {
-      this.currentPage = val;
+    handleTeachingPageChange(val) {
+      this.currentPageTeaching = val;
+    },
+    handleListeningSizeChange(val) {
+      this.pageSize = val;
+      this.currentPageListening = 1; // Reset to the first page when changing page size
+    },
+    handleListeningPageChange(val) {
+      this.currentPageListening = val;
     },
     showJoinDialog() {
       this.inviteDialogVisible = true;
