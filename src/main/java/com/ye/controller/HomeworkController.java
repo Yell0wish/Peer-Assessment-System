@@ -50,9 +50,7 @@ public class HomeworkController {
                               @RequestParam("content") String content,
                               @RequestParam("attachmentName") String attachmentName,
                               @RequestParam("attachment") MultipartFile attachment,
-                              @RequestParam("submitTimeString") String submitTimeString,
-                              @RequestParam("correctTimeString") String correctTimeString,
-                              @RequestParam("scoreMethod") String scoreMethod) {
+                              @RequestParam("submitTimeString") String submitTimeString) {
 
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
@@ -77,41 +75,24 @@ public class HomeworkController {
                     return Result.defeat("附件和内容不能同时为空");
                 }
 
-                String[] parts = scoreMethod.split(";");
-                if (parts.length == 2) {
-                    try {
-                        double a = Double.parseDouble(parts[0]);
-                        double b = Double.parseDouble(parts[1]);
-
-                        if (Math.abs(a + b - 1) > 1e-4) {
-                            throw new NumberFormatException();
-                        }
-                    } catch (NumberFormatException e) {
-                        return Result.defeat("分配方式不正确");
-                    }
-                } else {
-                    return Result.defeat("分配方式不正确");
-                }
-
 
                 // 进行日期格式转换
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 sdf.setLenient(false);
-                Date submitTime = null, correctTime = null;
+                Date submitTime = null;
                 try {
                     submitTime = sdf.parse(submitTimeString);
-                    correctTime = sdf.parse(correctTimeString);
                 } catch (Exception e) {
                     return Result.defeat("日期格式不正确，应为 yyyy-MM-dd HH:mm:ss");
                 }
                 ZoneId zoneId = ZoneId.of("Asia/Shanghai"); // 指定"Asia/Shanghai"时区（北京时间）
                 Date date = Date.from(LocalDateTime.now(zoneId).atZone(zoneId).toInstant());// 获取当前时间
-                if (date.compareTo(submitTime) >= 0 || submitTime.compareTo(correctTime) >= 0) {
+                if (date.compareTo(submitTime) >= 0) {
                     return Result.defeat("截至时间设置不正确");
                 }
 
 
-                homeworkService.addHomework(classid, title, content, attachmentName, attachment, submitTime, correctTime, scoreMethod);
+                homeworkService.addHomework(classid, title, content, attachmentName, attachment, submitTime);
                 Map<String, Object> map = new HashMap<>();
                 map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
                 return Result.success("您已成功添加资源", map);

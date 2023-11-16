@@ -70,4 +70,9 @@ public class SubmitService {
 
         return submitPojos.get(0);
     }
+
+    @Nullable
+    public SubmitPojo selectByID(int submitid) {
+        return submitDao.selectById(submitid);
+    }
 }

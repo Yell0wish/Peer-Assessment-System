@@ -41,6 +41,9 @@ public class SubmitController {
     @Autowired
     SCService scService;
 
+    @Autowired
+    CorrectService correctService;
+
     @RequestMapping(value = "/addSubmit", method = RequestMethod.POST)
     public String addSubmit(@RequestParam("userid") int userid,
                             @RequestParam("token") String token,
@@ -114,7 +117,7 @@ public class SubmitController {
                 return Result.defeat("未查询到相应作业");
             }
             // todo 判断是不是老师
-            if (!homeworkService.isHomeworkTeacher(homeworkid, userid) && submitDetails.getUserID() != userid) {
+            if (!homeworkService.isHomeworkTeacher(homeworkid, userid) && submitDetails.getUserID() != userid && !correctService.canCorrect(homeworkid, userid, studentid)) {
                 return Result.defeat("您无权查看学生作业");
             }
 
@@ -147,8 +150,8 @@ public class SubmitController {
             if (submitDetails == null) {
                 return Result.defeat("未查询到相应作业");
             }
-            // todo 判断是不是老师
-            if (!homeworkService.isHomeworkTeacher(homeworkid, userid) && submitDetails.getUserID() != userid) {
+            // todo 判断是不是老师或已经授权
+            if (!homeworkService.isHomeworkTeacher(homeworkid, userid) && submitDetails.getUserID() != userid && !correctService.canCorrect(homeworkid, userid, studentid)) {
                 return Result.defeat("您无权查看学生作业");
             }
             if (submitDetails.getAttachment() == null) {

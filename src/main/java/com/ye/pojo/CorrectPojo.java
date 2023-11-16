@@ -28,7 +28,7 @@ public class CorrectPojo {
     private int userC;
 
     @TableField(value = "score")
-    private int score;
+    private double score;
 
     @TableField(value = "time")
     private Date time;
