@@ -32,11 +32,12 @@ public class CorrectController {
     SubmitService submitService;
 
     @RequestMapping(value = "/allocateHomework", method = RequestMethod.POST)
-    public String attendCourse(@RequestParam("userid") int userid,
-                               @RequestParam("token") String token,
-                               @RequestParam("homeworkid") int homeworkid,
-                               @RequestParam("correctTimeString") String correctTimeString,
-                               @RequestParam("scoreMethod") String scoreMethod) {
+    public String allocateHomework(@RequestParam("userid") int userid,
+                                   @RequestParam("token") String token,
+                                   @RequestParam("homeworkid") int homeworkid,
+                                   @RequestParam("correctTimeString") String correctTimeString,
+                                   @RequestParam("scoreMethod") String scoreMethod,
+                                   @RequestParam("everyoneCorrectNum") int everyoneCorrectNum) {
 
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
@@ -93,9 +94,12 @@ public class CorrectController {
                     return Result.defeat("截至时间设置不正确");
                 }
                 homeworkService.updateHomework(homeworkid, correctTime, scoreMethod);
-                boolean allocate = correctService.allocate(homeworkid, Double.parseDouble(parts[0]), classPojo.getUserid());
-                if (!allocate) {
+                int allocate = correctService.allocate(homeworkid, Double.parseDouble(parts[0]), classPojo.getUserid(), everyoneCorrectNum);
+                if (allocate == 0) {
                     return Result.defeat("作业提交人数小于等于1，无法学生互评");
+                }
+                if (allocate == -1) {
+                    return Result.defeat("作业提交人数小于等于互评份数，无法学生互评");
                 }
                 Map<String, Object> map = new HashMap<>();
                 map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
@@ -152,6 +156,7 @@ public class CorrectController {
             }
 
             // todo 批改时间限制
+            //
             HomeworkPojo homeworkRoughly = homeworkService.getHomeworkRoughly(correctPojo.getHomeworkID());
             if (homeworkRoughly == null) {
                 return Result.defeat("作业不存在");
@@ -159,12 +164,13 @@ public class CorrectController {
 
             ZoneId zoneId = ZoneId.of("Asia/Shanghai"); // 指定"Asia/Shanghai"时区（北京时间）
             Date date = Date.from(LocalDateTime.now(zoneId).atZone(zoneId).toInstant());// 获取当前时间
-            if (homeworkRoughly.getCorrectTime().compareTo(date) < 0 ) {
+            if (homeworkRoughly.getCorrectTime().compareTo(date) < 0) {
                 ClassPojo classPojo = classService.selectClassByID(homeworkRoughly.getClassID());
                 assert classPojo != null;
                 if (classPojo.getUserid() != userid) { // 老师有特权，可以在批改时间过后批改
                     return Result.defeat("已经过了批改时间，无法批改");
                 }
+
 
             }
 

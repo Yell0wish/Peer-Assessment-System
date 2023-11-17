@@ -22,14 +22,19 @@ public class CorrectService {
 
     @Autowired
     CorrectDao correctDao;
-    public boolean allocate(int homeworkid, Double scoreMethod, int teacherid) {
+
+    public int allocate(int homeworkid, Double scoreMethod, int teacherid, int everyoneCorrectNum) {
         List<Integer> allSubmitID = submitDao.getAllSubmitID(homeworkid);
         if (allSubmitID.isEmpty()) {
-            return false;
+            return 0;
         }
 
         if (allSubmitID.size() == 1 && scoreMethod != 1) {
-            return false;
+            return 0;
+        }
+
+        if (allSubmitID.size() <= everyoneCorrectNum && scoreMethod != 1) {
+            return -1;
         }
 
         if (scoreMethod != 0) {
@@ -39,15 +44,17 @@ public class CorrectService {
         }
 
         if (allSubmitID.size() == 1 || scoreMethod == 1) {
-            return true;
+            return 1;
         }
-        Map<Integer, Integer> integerIntegerMap = AllocateAlgorithm.allocateRandom(allSubmitID);
-
-        assert integerIntegerMap != null;
-        for (Map.Entry<Integer, Integer> entry : integerIntegerMap.entrySet()) {
-            insert(homeworkid, entry.getKey(), entry.getValue());
+        Map<Integer, List<Integer>> integerListMap = AllocateAlgorithm.allocateRandom(allSubmitID, everyoneCorrectNum);
+        // 每个key都批改所有value的作业
+        assert integerListMap != null;
+        for (Map.Entry<Integer, List<Integer>> entry : integerListMap.entrySet()) {
+            for (int i : entry.getValue()) {
+                insert(homeworkid, i, entry.getKey());
+            }
         }
-        return true;
+        return 1;
     }
 
     public void insert(int homeworkid, int userO, int userC) {
@@ -59,7 +66,7 @@ public class CorrectService {
     }
 
     public boolean canCorrect(int homeworkid, int userid, int studentid) {
-        return  correctDao.exists(new QueryWrapper<CorrectPojo>().eq("userid_o", studentid).eq("userid_c", userid).eq("homeworkid", homeworkid));
+        return correctDao.exists(new QueryWrapper<CorrectPojo>().eq("userid_o", studentid).eq("userid_c", userid).eq("homeworkid", homeworkid));
     }
 
     public List<CorrectPojo> getAllocatedList(int userid) {
