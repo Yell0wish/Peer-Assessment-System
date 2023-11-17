@@ -15,7 +15,7 @@
 
       <div class="createPost-main-container">
         <el-row>
-          <Warning />
+          <!--          <Warning />-->
 
           <el-col :span="24">
             <el-form-item style="margin-bottom: 40px;" prop="title">
@@ -27,28 +27,29 @@
             <div class="postInfo-container">
               <el-row>
                 <el-col :span="8">
-                  <el-form-item label-width="60px" label="Author:" class="postInfo-container-item">
-                    <el-select v-model="postForm.author" :remote-method="getRemoteUserList" filterable default-first-option remote placeholder="Search user">
-                      <el-option v-for="(item,index) in userListOptions" :key="item+index" :label="item" :value="item" />
-                    </el-select>
+                  <el-form-item label-width="80px" label="作业标题" class="postInfo-container-item">
+                    <!--                    <el-select v-model="postForm.author" :remote-method="getRemoteUserList" filterable default-first-option remote placeholder="Search user">-->
+                    <!--                      <el-option v-for="(item,index) in userListOptions" :key="item+index" :label="item" :value="item" />-->
+                    <!--                    </el-select>-->
+                    <el-input autosize placeholder="输入作业标题"></el-input>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="10">
-                  <el-form-item label-width="120px" label="Publish Time:" class="postInfo-container-item">
-                    <el-date-picker v-model="displayTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="Select date and time" />
+                  <el-form-item label-width="120px" label="截止日期" class="postInfo-container-item">
+                    <el-date-picker v-model="displayTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择截止时间" />
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="6">
-                  <el-form-item label-width="90px" label="Importance:" class="postInfo-container-item">
+                  <el-form-item label-width="90px" label="重要程度" class="postInfo-container-item">
                     <el-rate
-                      v-model="postForm.importance"
-                      :max="3"
-                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                      :low-threshold="1"
-                      :high-threshold="3"
-                      style="display:inline-block"
+                        v-model="postForm.importance"
+                        :max="3"
+                        :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                        :low-threshold="1"
+                        :high-threshold="3"
+                        style="display:inline-block"
                     />
                   </el-form-item>
                 </el-col>
@@ -57,18 +58,18 @@
           </el-col>
         </el-row>
 
-        <el-form-item style="margin-bottom: 40px;" label-width="70px" label="Summary:">
-          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="Please enter the content" />
-          <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}words</span>
-        </el-form-item>
+        <!--        <el-form-item style="margin-bottom: 40px;" label-width="70px" label="作业描述">-->
+        <!--          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="输入作业描述" />-->
+        <!--          <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}words</span>-->
+        <!--        </el-form-item>-->
 
         <el-form-item prop="content" style="margin-bottom: 30px;">
           <Tinymce ref="editor" v-model="postForm.content" :height="400" />
         </el-form-item>
 
-        <el-form-item prop="image_uri" style="margin-bottom: 30px;">
-          <Upload v-model="postForm.image_uri" />
-        </el-form-item>
+        <!--        <el-form-item prop="image_uri" style="margin-bottom: 30px;">-->
+        <!--          <Upload v-model="postForm.image_uri" />-->
+        <!--        </el-form-item>-->
       </div>
     </el-form>
   </div>

@@ -7,7 +7,7 @@
       <el-input v-model.trim="user.newPassword" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submit">更改信息</el-button>
+      <el-button type="primary" @click="submit" icon="el-icon-edit">更改信息</el-button>
     </el-form-item>
   </el-form>
 </template>

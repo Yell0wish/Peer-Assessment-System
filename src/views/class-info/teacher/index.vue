@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row>
         <router-link to="/assignHomework">
-            <el-button type="primary">发布作业</el-button>
+            <el-button type="primary" icon="el-icon-s-order">发布作业</el-button>
         </router-link>
     </el-row>
     <el-tabs v-model="activeTab">
