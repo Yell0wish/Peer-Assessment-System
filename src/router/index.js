@@ -89,7 +89,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'dashboard', icon: 'dashboard', affix: true }
+        meta: { title: '用户信息', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -186,7 +186,19 @@ export const asyncRoutes = [
       },
     ]
   },
-
+  {
+    path: '/evaluate',
+    component: Layout,
+    hidden: false,
+    children: [
+      {
+        path: 'evaluate',
+        component: () => import('@/views/mutual-evaluation/index'),
+        name: 'Evaluate',
+        meta: { title: '作业互评', icon: 'user', noCache: true }
+      }
+    ]
+  },
   // {
   //   path: '/permission',
   //   component: Layout,
