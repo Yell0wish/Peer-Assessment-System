@@ -2,7 +2,6 @@ package com.ye.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ye.dao.HomeworkDao;
-import com.ye.pojo.ClassPojo;
 import com.ye.pojo.HomeworkPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,17 +9,15 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.util.annotation.Nullable;
 
 import java.io.IOException;
-import java.security.cert.TrustAnchor;
 import java.util.Date;
 import java.util.List;
-import java.util.TreeMap;
 
 @Service
 public class HomeworkService {
     @Autowired
     HomeworkDao homeworkDao;
 
-    public void addHomework(int classid, String title, String content, String attachmentName, MultipartFile attachment, Date submitTime) {
+    public void addHomework(int classid, String title, String content, String attachmentName, MultipartFile attachment, Date submitTime, double default_score) {
         byte[] file = null;
 
         if(!attachment.isEmpty()){ // 如果文件非空
@@ -39,6 +36,9 @@ public class HomeworkService {
         homeworkPojo.setAttachmentName(attachmentName);
         homeworkPojo.setAttachment(file);
         homeworkPojo.setSubmitTime(submitTime);
+        homeworkPojo.setDefaultScore(default_score);
+        homeworkPojo.setScoreMethod(-1);
+
 //        homeworkPojo.setCorrectTime(correctTime);
 //        homeworkPojo.setScoreMethod(scoreMethod);
 
@@ -55,14 +55,14 @@ public class HomeworkService {
 
     @Nullable
     public HomeworkPojo getHomeworkRoughly(int homeworkid) {
-        return homeworkDao.selectOne(new QueryWrapper<HomeworkPojo>().select("uuid", "classid", "title", "attachment_name", "date", "submit_time", "correct_time", "score_method").eq("uuid", homeworkid));
+        return homeworkDao.selectOne(new QueryWrapper<HomeworkPojo>().select("uuid", "classid", "title", "attachment_name", "date", "submit_time", "correct_time", "score_method", "corrected").eq("uuid", homeworkid));
     }
 
     public HomeworkPojo getHomeworkAttachment(int homeworkid) {
         return homeworkDao.selectOne(new QueryWrapper<HomeworkPojo>().select("uuid", "attachment_name", "attachment").eq("uuid", homeworkid));
     }
 
-    public HomeworkPojo selectClassByHomeworkID(int homeworkid) {
+    public HomeworkPojo selectByHomeworkID(int homeworkid) {
         return homeworkDao.selectOne(new QueryWrapper<HomeworkPojo>().select("uuid", "classid", "title", "content","attachment_name", "date", "submit_time", "correct_time", "score_method").eq("uuid", homeworkid));
     }
 
@@ -79,7 +79,13 @@ public class HomeworkService {
         return homeworkMatchTeacherCount > 0;
     }
 
-    public void updateHomework(int homeworkid, Date correctTime, String scoreMethod) {
+    public void updateHomework(int homeworkid, Date correctTime, double scoreMethod) {
         homeworkDao.updateMyself(homeworkid, correctTime, scoreMethod);
+    }
+
+    public void setCorrected(int homeworkid, int i) {
+        HomeworkPojo homeworkPojo = homeworkDao.selectList(new QueryWrapper<HomeworkPojo>().eq("uuid", homeworkid)).get(0);
+        homeworkPojo.setCorrected(i);
+        homeworkDao.updateById(homeworkPojo);
     }
 }

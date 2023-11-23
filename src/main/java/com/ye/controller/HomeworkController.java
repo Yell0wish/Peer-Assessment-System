@@ -50,7 +50,8 @@ public class HomeworkController {
                               @RequestParam("content") String content,
                               @RequestParam("attachmentName") String attachmentName,
                               @RequestParam("attachment") MultipartFile attachment,
-                              @RequestParam("submitTimeString") String submitTimeString) {
+                              @RequestParam("submitTimeString") String submitTimeString,
+                              @RequestParam("default_score") double default_score) {
 
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
@@ -91,11 +92,14 @@ public class HomeworkController {
                     return Result.defeat("截至时间设置不正确");
                 }
 
+                if(default_score < 0 || default_score > 100){
+                    return Result.defeat("默认分数不正确");
+                }
 
-                homeworkService.addHomework(classid, title, content, attachmentName, attachment, submitTime);
+                homeworkService.addHomework(classid, title, content, attachmentName, attachment, submitTime, default_score);
                 Map<String, Object> map = new HashMap<>();
                 map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
-                return Result.success("您已成功添加资源", map);
+                return Result.success("您已成功布置作业", map);
             } else {
                 return Result.defeat("您不是班级拥有者");
             }

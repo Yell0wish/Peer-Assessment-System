@@ -35,4 +35,13 @@ public class SubmitPojo {
 
     @TableField(value = "attachment")
     private byte[] attachment;
+
+    @TableField(value = "score")
+    private double score;
+
+    @TableField(value = "corrected")
+    private int corrected;
+
+    @TableField(value = "integrity")
+    private int integrity;
 }

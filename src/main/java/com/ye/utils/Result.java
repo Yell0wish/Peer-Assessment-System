@@ -1,6 +1,7 @@
 package com.ye.utils;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class Result {
         map.put("code", 200);
         map.put("message", message);
         map.put("data", data);
-        return JSONObject.toJSONString(map);
+        return JSONObject.toJSONString(map, JSONWriter.Feature.WriteMapNullValue);
     }
 
     public static String success(String fileName, byte[] file, HttpServletResponse response) throws IOException {

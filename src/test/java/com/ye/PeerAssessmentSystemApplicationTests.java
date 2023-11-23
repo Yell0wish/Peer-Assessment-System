@@ -47,6 +47,7 @@ class PeerAssessmentSystemApplicationTests {
     SubmitService submitService;
     @Autowired
     CorrectService correctService;
+
     @Test
     void contextLoads() {
         //userService.signup("丁真", "雪豹");
@@ -80,6 +81,7 @@ class PeerAssessmentSystemApplicationTests {
 //        Date date = Date.from(LocalDateTime.now(zoneId).atZone(zoneId).toInstant());// 获取当前时间
 //        homeworkService.updateHomework(10, date, "0.8;0.2");
         System.out.println(correctService.getAllocatedList(10007));
+//        correctService.getFinalScore(12, 10007, 0, 20);
 
     }
 

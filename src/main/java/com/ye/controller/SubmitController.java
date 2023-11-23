@@ -58,7 +58,7 @@ public class SubmitController {
         } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
-            HomeworkPojo homeworkPojo = homeworkService.selectClassByHomeworkID(homeworkid);
+            HomeworkPojo homeworkPojo = homeworkService.selectByHomeworkID(homeworkid);
             if (homeworkPojo == null) {
                 return Result.defeat("作业不存在");
             }
@@ -114,13 +114,27 @@ public class SubmitController {
             }
             SubmitPojo submitDetails = submitService.getSubmitDetails(studentid, homeworkid);
             if (submitDetails == null) {
-                return Result.defeat("未查询到相应作业");
+                return Result.defeat("未查询到相应作业提交");
             }
             // todo 判断是不是老师
             if (!homeworkService.isHomeworkTeacher(homeworkid, userid) && submitDetails.getUserID() != userid && !correctService.canCorrect(homeworkid, userid, studentid)) {
                 return Result.defeat("您无权查看学生作业");
             }
-
+            //todo 如果已经过了批改时间 调用批改接口
+            HomeworkPojo homeworkRoughly = homeworkService.getHomeworkRoughly(homeworkid);
+            if (homeworkRoughly == null) {
+                return Result.defeat("作业不存在");
+            }
+            if (homeworkRoughly.getCorrected() == 0) {
+                ZoneId zoneId = ZoneId.of("Asia/Shanghai"); // 指定"Asia/Shanghai"时区（北京时间）
+                Date date = Date.from(LocalDateTime.now(zoneId).atZone(zoneId).toInstant());// 获取当前时间
+                if (homeworkRoughly.getCorrectTime().compareTo(date) < 0) {
+                    //这里需要老师的id
+                    int classID = homeworkRoughly.getClassID();
+                    int teacherid = classService.selectClassByID(classID).getUserid();
+                    correctService.getFinalScore(homeworkid, teacherid, homeworkRoughly.getScoreMethod(), homeworkRoughly.getDefaultScore());
+                }
+            }
             Map<String, Object> map = new HashMap<>();
             map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
             map.put("submitDetails", submitDetails);
@@ -148,7 +162,7 @@ public class SubmitController {
 
             SubmitPojo submitDetails = submitService.getSubmitAttachment(studentid, homeworkid);
             if (submitDetails == null) {
-                return Result.defeat("未查询到相应作业");
+                return Result.defeat("未查询到相应作业提交");
             }
             // todo 判断是不是老师或已经授权
             if (!homeworkService.isHomeworkTeacher(homeworkid, userid) && submitDetails.getUserID() != userid && !correctService.canCorrect(homeworkid, userid, studentid)) {
@@ -160,4 +174,46 @@ public class SubmitController {
             return Result.success(submitDetails.getAttachmentName(), submitDetails.getAttachment(), response);
         }
     }
+
+    @RequestMapping(value = "/getSubmitList", method = RequestMethod.GET)
+    public String getSubmitList(@RequestParam("userid") int userid,
+                                @RequestParam("token") String token,
+                                @RequestParam("homeworkid") int homeworkid) {
+
+        UserPojo userPojo = userService.selectByID(userid);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
+            return Result.defeat("token不正确");
+        } else {
+            if (userPojo.getUuid() != userid) {
+                return Result.defeat("不是本人操作");
+            }
+            // 判断是不是老师
+            if (!homeworkService.isHomeworkTeacher(homeworkid, userid)) {
+                return Result.defeat("您不是作业拥有者");
+            }
+
+            //todo 如果已经过了批改时间 调用批改接口
+            HomeworkPojo homeworkRoughly = homeworkService.getHomeworkRoughly(homeworkid);
+            if (homeworkRoughly == null) {
+                return Result.defeat("作业不存在");
+            }
+            if (homeworkRoughly.getCorrected() == 0) {
+                ZoneId zoneId = ZoneId.of("Asia/Shanghai"); // 指定"Asia/Shanghai"时区（北京时间）
+                Date date = Date.from(LocalDateTime.now(zoneId).atZone(zoneId).toInstant());// 获取当前时间
+                if (homeworkRoughly.getCorrectTime().compareTo(date) < 0) {
+                    //这里需要老师的id
+                    int classID = homeworkRoughly.getClassID();
+                    int teacherid = classService.selectClassByID(classID).getUserid();
+                    correctService.getFinalScore(homeworkid, teacherid, homeworkRoughly.getScoreMethod(), homeworkRoughly.getDefaultScore());
+                }
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            map.put("submitList", submitService.getSubmitList(homeworkid));
+            return Result.success("已成功获取作业列表", map);
+        }
+    }
+
 }

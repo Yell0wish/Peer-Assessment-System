@@ -11,4 +11,8 @@ import java.util.List;
 public interface SubmitDao extends BaseMapper<SubmitPojo> {
     @Select("select userid from submit where homeworkid = #{homeworkid}")
     List<Integer> getAllSubmitID(@Param("homeworkid") int homeworkid);
+
+
+    @Update("update submit set score = #{score}, corrected = 1 where homeworkid = #{homeworkid} and userid = #{studentid}")
+    void updateScore(int homeworkid, int studentid, Double score);
 }

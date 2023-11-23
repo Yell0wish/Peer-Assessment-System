@@ -58,3 +58,7 @@ mybatis-plus:
     map-underscore-to-camel-case=false:
 
 
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.example.demo: DEBUG

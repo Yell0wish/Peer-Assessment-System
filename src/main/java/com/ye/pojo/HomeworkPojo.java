@@ -33,7 +33,7 @@ public class HomeworkPojo {
     @TableField(value = "attachment")
     private byte[] attachment;
 
-    @TableField(value = "time")
+    @TableField(value = "date")
     private Date time;
 
     @TableField(value = "submit_time")
@@ -43,5 +43,11 @@ public class HomeworkPojo {
     private Date correctTime;
 
     @TableField(value = "score_method")
-    private String scoreMethod;
+    private double scoreMethod;
+
+    @TableField(value = "default_score")
+    private double defaultScore;
+
+    @TableField(value = "corrected")
+    private int corrected;
 }

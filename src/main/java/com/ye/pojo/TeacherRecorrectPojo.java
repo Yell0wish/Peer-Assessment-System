@@ -8,28 +8,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName(value = "reassessment")
-public class ReassessmentPojo {
+@TableName(value = "teacher_recorrect")
+public class TeacherRecorrectPojo {
     @TableId(value = "uuid", type = IdType.AUTO)
     private int uuid;
 
-    @TableField(value = "submitID")
-    private int submitID;
+    @TableField(value = "teacherid")
+    private int teacherid;
 
-    @TableField(value = "teacherID")
-    private int teacherID;
-
-    @TableField(value = "score")
-    private double score;
-
-    @TableField(value = "time")
-    private Date time;
-
-    @TableField(value = "state")
-    private int state;
+    @TableField(value = "submitid")
+    private int submitid;
 }

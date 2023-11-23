@@ -33,12 +33,15 @@ public class SubmitService {
         if (submitPojos.size() > 1) {
             return false;
         }
-        SubmitPojo submitPojo1 = submitPojos.get(0);
-        if (submitPojo1 != null) {
+
+        if (submitPojos.size() == 1) {
+            SubmitPojo submitPojo1 = submitPojos.get(0);
             submitPojo1.setContent(content);
             submitPojo1.setAttachmentName(attachmentName);
             submitPojo1.setAttachment(file);
             submitPojo1.setTime(date);
+            submitPojo1.setScore(-1);
+            submitPojo1.setCorrected(0);
             submitDao.updateById(submitPojo1);
             return true;
         }
@@ -48,19 +51,33 @@ public class SubmitService {
         submitPojo.setContent(content);
         submitPojo.setAttachmentName(attachmentName);
         submitPojo.setAttachment(file);
+        submitPojo.setScore(-1);
+        submitPojo.setCorrected(0);
         submitDao.insert(submitPojo);
         return true;
     }
 
     @Nullable
     public SubmitPojo getSubmitDetails(int userid, int homeworkid) {
-        List<SubmitPojo> submitPojos = submitDao.selectList(new QueryWrapper<SubmitPojo>().select("uuid", "userid", "homeworkid", "userid", "time", "content", "attachment_name").eq("userid", userid).eq("homeworkid", homeworkid));
+        List<SubmitPojo> submitPojos = submitDao.selectList(new QueryWrapper<SubmitPojo>().select("uuid", "userid", "homeworkid", "userid", "time", "content", "attachment_name", "score", "corrected").eq("userid", userid).eq("homeworkid", homeworkid));
         if (submitPojos.size() != 1) {
             return null;
         }
 
         return submitPojos.get(0);
     }
+
+    @Nullable
+    public SubmitPojo getSubmitDetails(int submitid) {
+        List<SubmitPojo> submitPojos = submitDao.selectList(new QueryWrapper<SubmitPojo>().select("uuid", "userid", "homeworkid", "userid", "time", "content", "attachment_name", "score", "corrected").eq("uuid", submitid));
+        if (submitPojos.size() != 1) {
+            return null;
+        }
+
+        return submitPojos.get(0);
+    }
+
+
 
     public SubmitPojo getSubmitAttachment(int userid, int homeworkid) {
         List<SubmitPojo> submitPojos = submitDao.selectList(new QueryWrapper<SubmitPojo>().select("uuid","userid", "attachment", "attachment_name").eq("userid", userid).eq("homeworkid", homeworkid));
@@ -74,5 +91,21 @@ public class SubmitService {
     @Nullable
     public SubmitPojo selectByID(int submitid) {
         return submitDao.selectById(submitid);
+    }
+
+    public void updateIntegrity(int homeworkid, int studentid, int i) {
+        SubmitPojo submitPojo = submitDao.selectList(new QueryWrapper<SubmitPojo>().eq("homeworkid", homeworkid).eq("userid", studentid)).get(0);
+        submitPojo.setIntegrity(i);
+        submitDao.updateById(submitPojo);
+    }
+
+    public List<SubmitPojo> getSubmitList(int homeworkid) {
+        return submitDao.selectList(new QueryWrapper<SubmitPojo>().select("uuid", "userid", "time", "content", "attachment_name", "score", "corrected", "homeworkid", "integrity").eq("homeworkid", homeworkid));
+    }
+
+    public void updateScore(int submitid, double score) {
+        SubmitPojo submitPojo = getSubmitDetails(submitid);
+        assert submitPojo != null;
+        submitDao.updateScore(submitPojo.getHomeworkID(), submitPojo.getUserID(), score);
     }
 }

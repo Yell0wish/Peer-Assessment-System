@@ -116,7 +116,7 @@ public class UserController {
             Map<String, Object> map = new HashMap<>();
             map.put("userInformation", userPojo);
             map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
-            System.out.println(userPojo.getSchoolCode());
+//            System.out.println(userPojo.getSchoolCode());
             return Result.success("成功获取信息", map);
         }
     }
@@ -171,12 +171,13 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/resetPassword", method = RequestMethod.PUT)
+    @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
     public String resetPassword(@RequestParam("email") String email,
                                 @RequestParam("newPassword") String newPassword,
                                 @RequestParam("checkcode") String checkcode) {
 
         UserPojo userPojo = userService.selectByEmail(email);
+//        System.out.println(checkcode);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
         } else if (!checkcode.equals(redisService.getAndDeleteFromDatabase(email + "reset"))) {

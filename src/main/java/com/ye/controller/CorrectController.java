@@ -36,7 +36,7 @@ public class CorrectController {
                                    @RequestParam("token") String token,
                                    @RequestParam("homeworkid") int homeworkid,
                                    @RequestParam("correctTimeString") String correctTimeString,
-                                   @RequestParam("scoreMethod") String scoreMethod,
+                                   @RequestParam("scoreMethod") double scoreMethod,
                                    @RequestParam("everyoneCorrectNum") int everyoneCorrectNum) {
 
         UserPojo userPojo = userService.selectByID(userid);
@@ -45,7 +45,7 @@ public class CorrectController {
         } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
             return Result.defeat("token不正确");
         } else {
-            HomeworkPojo homeworkPojo = homeworkService.selectClassByHomeworkID(homeworkid);
+            HomeworkPojo homeworkPojo = homeworkService.selectByHomeworkID(homeworkid);
             if (homeworkPojo == null) {
                 return Result.defeat("作业不存在");
             }
@@ -56,25 +56,28 @@ public class CorrectController {
             }
             if (classPojo.getUserid() == userid) {
                 // todo 正确进行处理
-                if (homeworkPojo.getCorrectTime() != null) {
-                    return Result.defeat("已经分配过了，无法再分配");
-                }
-                String[] parts = scoreMethod.split(";");
-                if (parts.length == 2) {
-                    try {
-                        double a = Double.parseDouble(parts[0]);
-                        double b = Double.parseDouble(parts[1]);
-
-                        if (Math.abs(a + b - 1) > 1e-4) {
-                            throw new NumberFormatException();
-                        }
-                    } catch (NumberFormatException e) {
-                        return Result.defeat("分配方式不正确");
-                    }
-                } else {
+//                if (homeworkPojo.getCorrectTime() != null) {
+//                    return Result.defeat("已经分配过了，无法再分配");
+//                }
+//                String[] parts = scoreMethod.split(";");
+//                if (parts.length == 2) {
+//                    try {
+//                        double a = Double.parseDouble(parts[0]);
+//                        double b = Double.parseDouble(parts[1]);
+//
+//                        if (Math.abs(a + b - 1) > 1e-4) {
+//                            throw new NumberFormatException();
+//                        }
+//                    } catch (NumberFormatException e) {
+//                        return Result.defeat("分配方式不正确");
+//                    }
+//                } else {
+//                    return Result.defeat("分配方式不正确");
+//                }
+                System.out.println(scoreMethod);
+                if ((scoreMethod - 1) > 0 || scoreMethod < 0) {
                     return Result.defeat("分配方式不正确");
                 }
-
 
                 // 进行日期格式转换
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -93,14 +96,15 @@ public class CorrectController {
                 if (date.compareTo(correctTime) >= 0 || submitTime.compareTo(correctTime) >= 0) {
                     return Result.defeat("截至时间设置不正确");
                 }
-                homeworkService.updateHomework(homeworkid, correctTime, scoreMethod);
-                int allocate = correctService.allocate(homeworkid, Double.parseDouble(parts[0]), classPojo.getUserid(), everyoneCorrectNum);
+
+                int allocate = correctService.allocate(homeworkid, scoreMethod, classPojo.getUserid(), everyoneCorrectNum);
                 if (allocate == 0) {
                     return Result.defeat("作业提交人数小于等于1，无法学生互评");
                 }
                 if (allocate == -1) {
                     return Result.defeat("作业提交人数小于等于互评份数，无法学生互评");
                 }
+                homeworkService.updateHomework(homeworkid, correctTime, scoreMethod);
                 Map<String, Object> map = new HashMap<>();
                 map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
                 return Result.success("您已成功分配作业", map);
@@ -134,7 +138,7 @@ public class CorrectController {
                                   @RequestParam("correctid") int correctid,
                                   @RequestParam("score") double score,
                                   @RequestParam("comment") String comment) {
-
+        // 获取自己需要批改的作业列表
         UserPojo userPojo = userService.selectByID(userid);
         if (userPojo == null) {
             return Result.defeat("用户ID不存在");
@@ -173,7 +177,9 @@ public class CorrectController {
 
 
             }
-
+            if (score < 0 || score > 1) {
+                return Result.defeat("分数不正确");
+            }
             correctService.addCorrect(correctid, score, comment);
 
             Map<String, Object> map = new HashMap<>();
@@ -181,4 +187,28 @@ public class CorrectController {
             return Result.success("已成功批改作业", map);
         }
     }
+
+    @RequestMapping(value = "/getHomeworkAllocatedList", method = RequestMethod.GET)
+    public String getClassAllocatedList(@RequestParam("userid") int userid,
+                                        @RequestParam("token") String token,
+                                        @RequestParam("homeworkid") int homeworkid) {
+        // 获取某次作业所有的分批情况
+        UserPojo userPojo = userService.selectByID(userid);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
+            return Result.defeat("token不正确");
+        } else {
+            // todo 作业是否存在
+            if (!homeworkService.isHomeworkTeacher(homeworkid, userid)) {
+                return Result.defeat("您不是作业拥有者");
+            }
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            map.put("allocatedList", correctService.getHomeworkAllocatedList(homeworkid));
+            return Result.success("已成功获取班级分配作业批改情况", map);
+        }
+    }
+
 }

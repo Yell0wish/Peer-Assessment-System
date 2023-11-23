@@ -14,5 +14,5 @@ public interface HomeworkDao extends BaseMapper<HomeworkPojo> {
     int getHomeworkMatchTeacherCount(@Param("homeworkid") int homeworkid, @Param("userid") int userid);
 
     @Update("update homework set correct_time = #{correctTime}, score_method = #{scoreMethod} where uuid = #{homeworkid}")
-    void updateMyself(@Param("homeworkid") int homeworkid, @Param("correctTime") Date correctTime, @Param("scoreMethod") String scoreMethod);
+    void updateMyself(@Param("homeworkid") int homeworkid, @Param("correctTime") Date correctTime, @Param("scoreMethod") double scoreMethod);
 }
