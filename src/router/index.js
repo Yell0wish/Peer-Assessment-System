@@ -89,7 +89,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '用户信息', icon: 'dashboard', affix: true }
+        meta: { title: '用户信息', icon: 'user', affix: true }
       }
     ]
   },
@@ -142,12 +142,13 @@ export const asyncRoutes = [
   {
     path: '/classList',
     component: Layout,
+    redirect: '/classList/classList',
     children: [
       {
         path: 'classList',
         component: () => import('@/views/classList/index'),
         name: 'Course',
-        meta: { title: '课程班级', icon: 'education', noCache: true }
+        meta: { title: '课程班级', icon: 'tree-table', noCache: true }
       },
       {
         path: '/teachingClass/:id',
@@ -164,7 +165,7 @@ export const asyncRoutes = [
         hidden: true,
       },
       {
-        path: '/assignHomework',
+        path: '/assignHomework/:id',
         component: () => import('@/views/class-info/teacher/AssignHomework'),
         name: 'AssignHomework',
         meta: { title: '发布作业', noCache: true, activeMenu: '/classList'},
@@ -195,7 +196,7 @@ export const asyncRoutes = [
         path: 'evaluate',
         component: () => import('@/views/mutual-evaluation/index'),
         name: 'Evaluate',
-        meta: { title: '作业互评', icon: 'user', noCache: true }
+        meta: { title: '作业互评', icon: 'form', noCache: true }
       }
     ]
   },

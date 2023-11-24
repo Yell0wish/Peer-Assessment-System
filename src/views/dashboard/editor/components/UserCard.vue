@@ -22,7 +22,7 @@
         <div class="user-bio-section-header"><i class="el-icon-user" /><span>学号/教工号</span></div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            21XXXXXX
+            {{ user.userid }}
           </div>
         </div>
       <div class="user-education user-bio-section">
@@ -65,27 +65,6 @@
 <script>
 import PanThumb from '@/components/PanThumb'
 
-function getName () {
-  this.$axios({//向指定资源提交数据
-    url: 'http://192.168.125.88:8080' + "/getInformation",//请求路径
-
-    method: 'get',
-    data: {//提交id 密码
-      token: this.$store.token
-    },
-
-    transformRequest: [function (data) {
-      let ret = '';
-      for (let it in data) {
-        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-      }
-      return ret
-    }],
-  }).then(res => {
-    return res.data.data.userInformation.username
-  })
-}
-
 export default {
   components: { PanThumb },
   props: {
@@ -93,10 +72,11 @@ export default {
       type: Object,
       default: () => {
         return {
-          name: 'woshirenlei',
+          name: '',
           email: '',
           avatar: '',
-          role: ''
+          role: '',
+          userid: '',
         }
       }
     }

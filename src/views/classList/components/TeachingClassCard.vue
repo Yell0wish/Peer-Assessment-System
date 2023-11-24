@@ -6,7 +6,7 @@
         <div style="padding: 14px;">
           <span>{{ cardData.title }}</span>
           <div class="bottom clearfix">
-            <el-button type="text" class="button" @click="enterClass(cardData.title)">进入班级</el-button>
+            <el-button type="text" class="button" @click="enterClass(cardData.id)">进入班级</el-button>
           </div>
         </div>
       </el-card>

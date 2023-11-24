@@ -28,34 +28,29 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      :data="list"
+      :data="homeworkList"
       border
       fit
       highlight-current-row
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.date')" width="150px" align="center">
+      <el-table-column label="截止时间" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.title')" min-width="150px">
+      <el-table-column label="作业名称" min-width="150px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleClickTitle(row.title)">{{ row.title }}</span>
+          <span>{{ row.title }}</span>
 <!--          <el-tag>{{ row.type | typeFilter }}</el-tag>-->
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.author')" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column :label="$t('table.author')" width="110px" align="center">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <span>{{ row.author }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column v-if="showReviewer" :label="$t('table.reviewer')" width="110px" align="center">
         <template slot-scope="{row}">
           <span style="color:red;">{{ row.reviewer }}</span>
@@ -72,16 +67,16 @@
 <!--          <span v-else>0</span>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
+<!--      <el-table-column :label="$t('table.status')" class-name="status-col" width="100">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <el-tag :type="row.status | statusFilter">-->
+<!--            {{ row.status }}-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleClickTitle(row)">
+          <el-button type="primary" size="mini" @click="handleClickDetail(row)">
 <!--            {{ $t('table.edit') }}-->
             查看作业
           </el-button>
@@ -91,10 +86,10 @@
 <!--          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
 <!--            {{ $t('table.draft') }}-->
 <!--          </el-button>-->
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-<!--            {{ $t('table.delete') }}-->
-            打回作业
-          </el-button>
+<!--          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">-->
+<!--&lt;!&ndash;            {{ $t('table.delete') }}&ndash;&gt;-->
+<!--            打回作业-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -153,6 +148,7 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import ArticleDetail from './components/ArticleDetail'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -171,6 +167,9 @@ export default {
   name: 'ComplexTable',
   components: { Pagination },
   directives: { waves },
+  props: {
+    homeworkList: null,
+  },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -189,7 +188,7 @@ export default {
       tableKey: 0,
       list: null,
       total: 0,
-      listLoading: true,
+      listLoading: false,
       listQuery: {
         page: 1,
         limit: 20,
@@ -229,9 +228,12 @@ export default {
     }
   },
   created() {
-    this.getList()
   },
   methods: {
+    handleClickDetail(rowData) {
+      console.log(JSON.stringify(rowData))
+
+    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {

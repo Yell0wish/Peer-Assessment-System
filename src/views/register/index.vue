@@ -1,9 +1,10 @@
 <template>
-  <div class="register">
+  <div class="page-box">
 
-    <h1 style="text-align: center">注册</h1>
-    <el-form ref="registerForm" :model="registerForm" :rules="rules" label-width="100px">
-      <el-form-item label="邮箱:" prop="email">
+
+    <el-form ref="registerForm" :model="registerForm" :rules="rules" label-width="100px" class="register">
+        <h1 style="text-align: center">注册账号</h1>
+      <el-form-item label="邮箱：" prop="email">
         <el-input v-model="registerForm.email" placeholder="请输入邮箱"></el-input>
       </el-form-item>
 
@@ -11,17 +12,21 @@
         <el-input v-model="registerForm.passwd" placeholder="请输入密码" show-password clearable></el-input>
       </el-form-item>
 
-      <el-form-item label="再次密码：" prop="passwdagain">
+      <el-form-item label="确认密码：" prop="passwdagain">
         <el-input v-model="registerForm.passwdagain" placeholder="请确认密码" show-password clearable></el-input>
       </el-form-item>
 
-      <el-form-item label="验证码:" prop="verifyCode">
+      <el-form-item label="验证码：" prop="verifyCode">
         <el-input v-model="registerForm.verifyCode" placeholder=请输入验证码></el-input>
       </el-form-item>
 
       <el-form-item label-width="0px">
-        <el-button size="medium" style="border-color: #ded9d9;" @click="clickSend">发送验证码</el-button>
-        <el-button type="primary" size="medium" :loading = "isLoading"  @click="clickRegister">{{text}}</el-button>
+        <div style="float: left;">
+          <el-button type="primary" size="medium" @click="clickSend" :loading = "isLoading">发送验证码</el-button>
+        </div>
+        <div style="float: right;">
+          <el-button type="primary" size="medium" :loading = "isLoading"  @click="clickRegister">{{text}}</el-button>
+        </div>
       </el-form-item>
 
     </el-form>
@@ -84,69 +89,16 @@ export default {
 
   methods: {
     clickRegister() {
-      if (this.isLoading) {
-        this.text = ""
-      }
-      //获取到的是添加了ref="registerForm"属性的这个组件 前端判断
-      this.$refs["registerForm"].validate((valid) => {
-        if(this.registerForm.verifyCode === ''){
-          alert('验证码不能为空');
-          return ;
-        }
-        if(valid && this.registerForm.verifyCode !== '') {
-          this.$axios({
-            url: this.$url + "/signup",
-            method: 'post',
-            data: {
-              email: this.registerForm.email,//邮箱
-              password : this.registerForm.passwd,
-              checkcode: this.registerForm.verifyCode,
-            },
-            transformRequest: [function (data) {
-              let ret = '';
-              for (let it in data) {
-                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-              }
-              return ret
-            }],
-          }).then(res => {
-              window.console.log(res.data.message);
-              if(res.data.code === 200){
-                this.$axios({//向指定资源提交数据
-                  url: this.$url + "/login",//请求路径
-
-                  method: 'post',
-                  data: {//提交id 密码
-                    email:this.registerForm.email,
-                    //passwd: this.$md5(this.form.passwd + this.$salt),
-                    password: this.registerForm.passwd,
-                  },
-
-                  transformRequest: [function (data) {
-                    let ret = '';
-                    for (let it in data) {
-                      ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-                    }
-                    return ret
-                  }],
-                }).then(res => {
-                  this.$store.dispatch('user/login', this.loginForm)
-                  this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-                })
-              }
+      if (!this.registerForm.verifyCode) {
+          this.$message({
+              type: 'warning',
+              message: '验证码不能为空'
           })
-          // console.log('success')
-        }else  {
-          this.text = "创建账户";
-          this.isLoading = false;
-          this.$alert('账号不成立！', '警告', {
-            confirmButtonText: '确定',
-            callback: {
-            }
-          });
-          // console.log('error submit!!');
-          return false;
-        }
+          this.isLoading = false
+          return
+      }
+      this.$store.dispatch('user/register', this.registerForm).then(() => {
+          this.isLoading = false
       })
     },
 
@@ -159,39 +111,85 @@ export default {
       }
     },
     clickSend() {
-    if (this.registerForm.email !== '') {
-      this.$axios({
-        url: 'http://192.168.31.13:8080/signupCheckCode', // 请求路径
-        method: 'get',
-        params: {
-          email: this.registerForm.email
+        if (!this.registerForm.email) {
+            this.$message({
+                type: 'warning',
+                message: '邮箱不能为空'
+            })
+            this.isLoading = false
+            return
         }
-      }).then(res => {
-        window.console.log("received" + res.data.message);
-      });
-    }
-    else{
-      alert('邮箱不能为空');
-    }
-
+        this.$store.dispatch('user/sendRegisterVerifyCode', this.registerForm.email).then(() => {
+            this.isLoading = false
+        })
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+/* 修复input 背景不协调 和光标变色 */
+/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-.register {
-  margin: auto;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 25rem;
-  position: absolute;
-  background-color: white;
-  padding: 20px 20px 10px 20px;
-  border-radius: 10px;
-  box-shadow: 0px 15px 25px 0px rgba(0, 0, 0, 0.11);
+$bg:#283443;
+$light_gray:#fff;
+$cursor: #fff;
+
+@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
+  .login-container .el-input input {
+  }
 }
 
+/* reset element-ui css */
+.login-container {
+  .el-input {
+    display: inline-block;
+    height: 47px;
+    width: 85%;
+
+    input {
+      background: transparent;
+      border: 0px;
+      -webkit-appearance: none;
+      border-radius: 0px;
+      padding: 12px 5px 12px 15px;
+      height: 47px;
+
+      &:-webkit-autofill {
+        box-shadow: 0 0 0px 1000px $bg inset !important;
+        -webkit-text-fill-color: $cursor !important;
+      }
+    }
+  }
+
+  .el-form-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+  }
+}
 </style>
+
+<style lang="scss" scoped>
+.page-box{
+
+  background-color: #2d3a4b;
+  min-height: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  .register {
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    width: 25rem;
+    position: absolute;
+    background-color: white;
+    padding: 20px 20px 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0px 15px 25px 0px rgba(0, 0, 0, 0.11);
+  }
+}
+</style>
+

@@ -170,6 +170,7 @@ export default {
     }
   },
   created() {
+    console.log("params:" + JSON.stringify(this.$route.params))
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)

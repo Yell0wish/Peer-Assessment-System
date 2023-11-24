@@ -4,6 +4,7 @@
       <el-row>
         <el-button @click="showJoinDialog" type="primary" icon="el-icon-s-promotion">加入班级</el-button>
         <el-button @click="showCreateDialog" type="primary" icon="el-icon-s-opportunity">创建班级</el-button>
+        <el-button @click="showGetInviteCodeDialog" type="primary" icon="el-icon-share">获取班级邀请码</el-button>
       </el-row>
     </el-row>
     <el-tabs v-model="activeTab">
@@ -38,13 +39,17 @@
         </div>
       </el-tab-pane>
     </el-tabs>
-    <el-dialog :visible.sync="inviteDialogVisible" title="请输入班级邀请码">
+    <el-dialog :visible.sync="inviteDialogVisible" title="加入班级">
       <el-row style="margin-bottom: 20px;">
         <el-input v-model="inviteCode" placeholder="请输入班级邀请码"></el-input>
       </el-row>
       <el-row>
-        <el-button @click="confirmJoin" type="primary">确认</el-button>
-        <el-button @click="cancelJoin" type="primary">取消</el-button>
+        <div style="float: right">
+          <el-button @click="cancelJoin" type="primary">取消</el-button>
+        </div>
+        <div style="float: left">
+          <el-button @click="confirmJoin" type="primary">确认</el-button>
+        </div>
       </el-row>
     </el-dialog>
     <el-dialog :visible.sync="createDialogVisible" title="创建课程">
@@ -52,8 +57,25 @@
         <el-input v-model="classname" placeholder="请输入课程名称"></el-input>
       </el-row>
       <el-row>
-        <el-button @click="confirmCreate" type="primary">确认</el-button>
-        <el-button @click="cancelCreate" type="primary">取消</el-button>
+        <div style="float: right">
+          <el-button @click="cancelCreate" type="primary">取消</el-button>
+        </div>
+        <div style="float: left">
+          <el-button @click="confirmCreate" type="primary">确认</el-button>
+        </div>
+      </el-row>
+    </el-dialog>
+    <el-dialog :visible.sync="getInvitationDialogVisible" title="获取班级邀请码">
+      <el-row style="margin-bottom: 20px;">
+        <el-input v-model="classid" placeholder="请输入班级ID"></el-input>
+      </el-row>
+      <el-row>
+        <div style="float: right">
+          <el-button @click="cancelGetInviteCode" type="primary">取消</el-button>
+        </div>
+        <div style="float: left">
+          <el-button @click="confirmGetInviteCode" type="primary">确认</el-button>
+        </div>
       </el-row>
     </el-dialog>
   </div>
@@ -71,24 +93,15 @@ export default {
       activeTab: 'teaching', // 默认展示"我教的课"
       inviteDialogVisible: false,
       createDialogVisible: false,
+      getInvitationDialogVisible: false,
       inviteCode: '',
       classname: '',
+      classid: '',
       currentPageTeaching: 1,
       currentPageListening: 1,
       pageSize: 4,
-      teachingCards: [
-        { title: "我教的课1" },
-        { title: "我教的课2" },
-        { title: "我教的课3" },
-        { title: "我教的课4" },
-      ],
-      listeningCards: [
-        { title: "我听的课1" },
-        { title: "我听的课2" },
-        { title: "我听的课3" },
-        { title: "我听的课4" },
-        { title: "我听的课5" },
-      ]
+      teachingCards: [],
+      listeningCards: []
     };
   },
   computed: {
@@ -104,9 +117,25 @@ export default {
     }
   },
   created() {
-
+    this.fetchData()
   },
   methods: {
+    fetchData(){
+      this.$store.dispatch('user/getTeachingCourses')
+          .then((data) => {
+            this.teachingCards = data.classes.map(item => ({
+              title: item.classname,
+              id: item.uuid
+            }));
+          })
+      this.$store.dispatch('user/getListeningCourses')
+          .then((data) => {
+            this.listeningCards = data.attendedCoursePublcInformation.map(item => ({
+              title: item.classname,
+              id: item.uuid
+            }));
+          })
+    },
     handleTeachingSizeChange(val) {
       this.pageSize = val;
       this.currentPageTeaching = 1; // Reset to the first page when changing page size
@@ -124,9 +153,17 @@ export default {
     showJoinDialog() {
       this.inviteDialogVisible = true;
     },
+    showGetInviteCodeDialog() {
+      this.getInvitationDialogVisible = true;
+    },
     confirmJoin() {
-      // 处理确认按钮点击事件
-      console.log('确认按钮点击，邀请码为:', this.inviteCode);
+      this.$store.dispatch('user/joinClass', this.inviteCode)
+          .then((data) => {
+            this.$message({
+              type: 'success',
+              message: '成功加入班级'
+            })
+          })
       this.inviteDialogVisible = false; // 隐藏 Dialog
     },
     cancelJoin() {
@@ -138,8 +175,12 @@ export default {
       this.createDialogVisible = true;
     },
     confirmCreate() {
-      // 处理确认按钮点击事件
-      console.log('确认按钮点击，邀请码为:', this.inviteCode);
+      this.$store.dispatch('user/createClass', this.classname)
+          .then(data => {
+            this.$alert('班级ID：'+data.classid, '请记住班级ID，班级所有者可凭此获取班级邀请码', {
+              confirmButtonText: '确定',
+            });
+          })
       this.createDialogVisible = false; // 隐藏 Dialog
     },
     cancelCreate() {
@@ -147,12 +188,26 @@ export default {
       console.log('取消按钮点击');
       this.createDialogVisible = false; // 隐藏 Dialog
     },
+    confirmGetInviteCode() {
+      this.$store.dispatch('user/getAccessCode', this.classid)
+          .then(data => {
+            this.$alert('请记好邀请码：'+data.accessCode, '班级邀请码', {
+              confirmButtonText: '确定',
+            });
+          })
+      this.getInvitationDialogVisible = false; // 隐藏 Dialog
+    },
+    cancelGetInviteCode() {
+      // 处理取消按钮点击事件
+      console.log('取消按钮点击');
+      this.getInvitationDialogVisible = false; // 隐藏 Dialog
+    },
   }
 }
 </script>
 
 <style>
 .navbar {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 </style>

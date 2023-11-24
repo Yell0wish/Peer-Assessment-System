@@ -21,8 +21,10 @@ export default {
     return {
       activeTab: "todo"
     }
-  }
-
+  },
+  created() {
+    console.log(this.$route.params.id)
+  },
 }
 
 </script>
