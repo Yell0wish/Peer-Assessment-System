@@ -172,6 +172,13 @@ export const asyncRoutes = [
         hidden: true,
       },
       {
+        path: '/homeworkDetail/:classid/:homeworkid',
+        component: () => import('@/views/class-info/teacher/HomeworkDetail'),
+        name: 'HomeworkDetail',
+        meta: { title: '查看作业', noCache: true, activeMenu: '/classList'},
+        hidden: true,
+      },
+      {
         path: '/commitHomework',
         component: () => import('@/views/class-info/student/CommitHomework'),
         name: 'CommitHomework',
@@ -179,7 +186,7 @@ export const asyncRoutes = [
         hidden: true,
       },
       {
-        path: '/statisticInfo/:id',
+        path: '/statisticInfo/:classid/:homeworkid',
         component: () => import('@/views/statistic-info/index'),
         name: 'HomeworkStatistic',
         meta: { title: '作业统计信息', noCache: true, activeMenu: '/classList'},

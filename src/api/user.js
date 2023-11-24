@@ -114,6 +114,23 @@ export function joinClass(data) {
   })
 }
 
+export function assignHomework(data) {
+  let formData = new FormData();
+  const emptyFile = new File([], 'empty.txt');
+  formData.append('attachment', emptyFile);
+  for (let key in data) {
+    formData.append(key, data[key]);
+  }
+  return request({
+    url: '/addHomework',
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data; boundary=--------------------------447331697369778982143514'
+    },
+
+    data: formData
+  })
+}
 export function getAllTeachingClasses(token, userid) {
   return request({
     url: '/selectAllTeachingClasses',

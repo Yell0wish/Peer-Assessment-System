@@ -52,7 +52,6 @@ export default {
                 classid: item.classID,
                 homeworkid: item.uuid,
               }));
-              console.log(JSON.stringify(this.hwList))
             })
       }
     }

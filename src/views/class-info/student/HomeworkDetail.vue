@@ -18,11 +18,11 @@
           <!--          <Warning />-->
 
           <el-col :span="24">
-            <!--            <el-form-item style="margin-bottom: 40px;" prop="title">-->
-            <!--              <MDinput v-model="postForm.title" :maxlength="100" name="name" required>-->
-            <!--                Title-->
-            <!--              </MDinput>-->
-            <!--            </el-form-item>-->
+<!--            <el-form-item style="margin-bottom: 40px;" prop="title">-->
+<!--              <MDinput v-model="postForm.title" :maxlength="100" name="name" required>-->
+<!--                Title-->
+<!--              </MDinput>-->
+<!--            </el-form-item>-->
 
             <div class="postInfo-container">
               <el-row>
@@ -66,7 +66,6 @@
         <el-form-item prop="content" style="margin-bottom: 30px;">
           <Tinymce ref="editor" v-model="realData.content" :height="400" />
         </el-form-item>
-        <el-button type="primary" @click="handleAssign">发布作业</el-button>
 
         <!--        <el-form-item prop="image_uri" style="margin-bottom: 30px;">-->
         <!--          <Upload v-model="postForm.image_uri" />-->
@@ -86,7 +85,6 @@ import { fetchArticle } from '@/api/article'
 import { searchUser } from '@/api/remote-search'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
-import {formatDate} from "element-ui";
 
 const defaultForm = {
   status: 'draft',
@@ -153,7 +151,6 @@ export default {
         content: '',
         deadLine: '',
         file: '',
-        classid: ''
       },
       tempRoute: {}
     }
@@ -179,8 +176,19 @@ export default {
     }
   },
   created() {
-    console.log(JSON.stringify(this.$route.params.id))
-    this.realData.classid = this.$route.params.id
+    //console.log("params:" + JSON.stringify(this.$route.params))
+    this.$store.dispatch('user/getHomeworkDetail', this.$route.params)
+        .then((data) => {
+          console.log(JSON.stringify(data.homeworkDetails))
+          this.realData = data.homeworkDetails.map(item => ({
+            title: item.title,
+            deadLine: item.submitTime,
+            content: item.content,
+            file: item.attachmentName,
+          }));
+          this.realData = this.realData[0]
+          console.log(JSON.stringify(this.realData))
+        })
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
@@ -192,22 +200,6 @@ export default {
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
-    formatDate(dateTimeString) {
-      const date = new Date(dateTimeString);
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      const seconds = date.getSeconds().toString().padStart(2, '0');
-
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    },
-    handleAssign() {
-      this.realData.content = this.realData.content.replace(/<p>/g, "").replace(/<\/p>/g, "");
-      console.log(JSON.stringify(this.realData))
-      this.$store.dispatch('user/assignHomework', this.realData)
-    },
     fetchData(id) {
       fetchArticle(id).then(response => {
         this.postForm = response.data

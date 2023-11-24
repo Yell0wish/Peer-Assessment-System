@@ -80,6 +80,10 @@
 <!--            {{ $t('table.edit') }}-->
             查看作业
           </el-button>
+          <el-button type="primary" size="mini" @click="handleClickDetail(row)">
+            <!--            {{ $t('table.edit') }}-->
+            批改作业
+          </el-button>
 <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
 <!--            {{ $t('table.publish') }}-->
 <!--          </el-button>-->
@@ -148,7 +152,7 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import ArticleDetail from './components/ArticleDetail'
+import HomeworkDetail from './HomeworkDetail'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -231,8 +235,8 @@ export default {
   },
   methods: {
     handleClickDetail(rowData) {
-      console.log(JSON.stringify(rowData))
-
+      console.log(JSON.stringify(rowData.classid))
+      this.$router.push({name:'HomeworkDetail',params: {classid: rowData.classid, homeworkid: rowData.homeworkid}})
     },
     getList() {
       this.listLoading = true

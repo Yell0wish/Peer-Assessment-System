@@ -13,7 +13,7 @@ import {
   getAccessCode,
   getAllTeachingClasses,
   getAllListeningClasses,
-  getStuentList, getHomeworkList
+  getStuentList, getHomeworkList, getHomeworkDetail, assignHomework
 } from '@/api/user'
 import {getToken, setToken, removeToken, getUserid, setUserid} from '@/utils/auth'
 import router, { resetRouter } from '@/router'
@@ -142,6 +142,20 @@ const actions = {
     })
   },
 
+  assignHomework({ commit }, homeworkInfo){
+
+    return new Promise((resolve, reject) => {
+      assignHomework({userid: state.userid, token: state.token, classid: parseInt(homeworkInfo.classid), title: homeworkInfo.title, content: homeworkInfo.content, submitTimeString: "2023-11-24 23:59:29", attachmentName: "", default_score: 22}).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
   // reset user password by Zoransy
   resetPassword({ commit }, passwordInfo) {
     const { email, newPassword, checkcode } = passwordInfo;
@@ -247,9 +261,10 @@ const actions = {
     })
   },
 
-  getHomeworkDetail({ commit, state }, classid, homeworkid) {
+  getHomeworkDetail({ commit, state }, homeworkinfo) {
+    console.log(JSON.stringify(homeworkinfo))
     return new Promise((resolve, reject) => {
-      getHomeworkDetail(parseInt(state.userid), state.token, parseInt(classid), parseInt(homeworkid)).then(response => {
+      getHomeworkDetail(parseInt(state.userid), state.token, parseInt(homeworkinfo.classid), parseInt(homeworkinfo.homeworkid)).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)

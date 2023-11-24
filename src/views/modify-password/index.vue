@@ -61,10 +61,10 @@ export default {
 
   methods: {
     clickReset(){
-      if (!this.modifyForm.email) {
+      if (!this.modifyForm.checkcode) {
         this.$message({
           type: 'warning',
-          message: '邮箱不能为空'
+          message: '验证码不能为空'
         })
         this.isLoading = false
         return
@@ -76,10 +76,10 @@ export default {
     },
 
     clickSend() {
-      if (!this.modifyForm.checkcode) {
+      if (!this.modifyForm.email) {
         this.$message({
           type: 'warning',
-          message: '验证码不能为空'
+          message: '邮箱不能为空'
         })
         this.isLoading = false
         return
