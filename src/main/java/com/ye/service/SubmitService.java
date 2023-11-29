@@ -11,6 +11,7 @@ import reactor.util.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -107,5 +108,24 @@ public class SubmitService {
         SubmitPojo submitPojo = getSubmitDetails(submitid);
         assert submitPojo != null;
         submitDao.updateScore(submitPojo.getHomeworkID(), submitPojo.getUserID(), score);
+    }
+
+    public HashMap<Integer, Integer> getHomeworkStatisticStage(int homeworkid) {
+        // 需要90分以上 80-90 70-80 60-70 60以下
+        HashMap<Integer, Integer> map = new HashMap<>();
+        submitDao.selectList(new QueryWrapper<SubmitPojo>().select("score").eq("homeworkid", homeworkid)).forEach(submitPojo -> {
+            if (submitPojo.getScore() >= 90) {
+                map.put(5, map.getOrDefault(5, 0) + 1);
+            } else if (submitPojo.getScore() >= 80) {
+                map.put(4, map.getOrDefault(4, 0) + 1);
+            } else if (submitPojo.getScore() >= 70) {
+                map.put(3, map.getOrDefault(3, 0) + 1);
+            } else if (submitPojo.getScore() >= 60) {
+                map.put(2, map.getOrDefault(2, 0) + 1);
+            } else if (submitPojo.getScore() >= 0) {
+                map.put(1, map.getOrDefault(1, 0) + 1);
+            }
+        });
+        return map;
     }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ye.dao.CorrectDao;
 import com.ye.dao.SubmitDao;
 import com.ye.dao.TeacherRecorrectDao;
+import com.ye.pojo.CorrectExtendPojo;
 import com.ye.pojo.CorrectPojo;
 import com.ye.pojo.HomeworkPojo;
 import com.ye.pojo.SubmitPojo;
@@ -84,7 +85,7 @@ public class CorrectService {
         return correctDao.exists(new QueryWrapper<CorrectPojo>().eq("userid_o", studentid).eq("userid_c", userid).eq("homeworkid", homeworkid));
     }
 
-    public List<CorrectPojo> getAllocatedList(int userid) {
+    public List<CorrectExtendPojo> getAllocatedList(int userid) {
         // return correctDao.selectList(new QueryWrapper<CorrectPojo>().eq("userid_c", userid));
         return correctDao.getAllocatedList(userid);
     }

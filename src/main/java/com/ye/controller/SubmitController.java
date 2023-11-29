@@ -216,4 +216,31 @@ public class SubmitController {
         }
     }
 
+
+    @RequestMapping(value = "/getHomeworkStatisticStage", method = RequestMethod.GET)
+    public String getHomeworkStatisticStage(@RequestParam("userid") int userid,
+                                            @RequestParam("token") String token,
+                                            @RequestParam("homeworkid") int homeworkid) {
+
+        UserPojo userPojo = userService.selectByID(userid);
+        if (userPojo == null) {
+            return Result.defeat("用户ID不存在");
+        } else if (!token.equals(tokenService.getToken(userPojo.getEmail()))) {
+            return Result.defeat("token不正确");
+        } else {
+            if (userPojo.getUuid() != userid) {
+                return Result.defeat("不是本人操作");
+            }
+            // 判断是不是老师或者学生
+            if (!homeworkService.isHomeworkTeacher(homeworkid, userid) && !scService.studentIsInclass(homeworkService.selectByHomeworkID(homeworkid).getClassID(), userid)) {
+                return Result.defeat("您无权查看作业统计");
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", tokenService.getAndUpdateToken(userPojo.getEmail()));
+            map.put("statisticStage", submitService.getHomeworkStatisticStage(homeworkid));
+            return Result.success("已成功获取作业统计段", map);
+
+
+        }
+    }
 }
