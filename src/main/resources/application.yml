@@ -62,3 +62,10 @@ logging:
   level:
     org.springframework.web: DEBUG
     com.example.demo: DEBUG
+
+server:
+  port: 8080
+  tomcat:
+    connection-timeout: 20000
+    accept-count: 500
+    max-threads: 400
