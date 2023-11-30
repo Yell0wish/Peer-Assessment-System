@@ -16,7 +16,23 @@
     <properties>
         <java.version>17</java.version>
     </properties>
+
+    <repositories>
+        <!-- 其他仓库 -->
+        <repository>
+            <id>XINCHECK</id>
+            <name>XINCHECK Public Repository</name>
+            <url>https://maven.xincheck.com/repository/maven-releases/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>com.xincheck</groupId>
+            <artifactId>duplicate-check</artifactId>
+            <version>0.5.11</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -79,8 +95,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-
-
 
 
     </dependencies>
