@@ -99,6 +99,18 @@ export function getAccessCode(classid, token, userid) {
     }
   })
 }
+
+export function getDuplicateReport(token, filetoken) {
+  return request({
+    url: '/getContentCheck',
+    method: 'get',
+    params: {
+      token: token,
+      checkToken: filetoken
+    }
+  })
+}
+
 export function joinClass(data) {
   return request({
     url: '/attendCourse',

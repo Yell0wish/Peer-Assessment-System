@@ -13,5 +13,6 @@ const getters = {
   permission_routes: state => state.permission.routes,
   errorLogs: state => state.errorLog.logs,
   userid: state => state.user.userid,
+  fileUpload: state => state.api.fileUpload,
 }
 export default getters

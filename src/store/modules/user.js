@@ -13,7 +13,7 @@ import {
   getAccessCode,
   getAllTeachingClasses,
   getAllListeningClasses,
-  getStuentList, getHomeworkList, getHomeworkDetail, assignHomework
+  getStuentList, getHomeworkList, getHomeworkDetail, assignHomework, getDuplicateReport
 } from '@/api/user'
 import {getToken, setToken, removeToken, getUserid, setUserid} from '@/utils/auth'
 import router, { resetRouter } from '@/router'
@@ -116,7 +116,7 @@ const actions = {
     })
   },
 
-  getAccessCode({ commit, state}, classID) {
+  getAccessCode({ commit, state }, classID) {
     return new Promise((resolve, reject) => {
       getAccessCode(classID, state.token, state.userid).then(response => {
         const { data } = response
@@ -143,12 +143,23 @@ const actions = {
   },
 
   assignHomework({ commit }, homeworkInfo){
-
     return new Promise((resolve, reject) => {
       assignHomework({userid: state.userid, token: state.token, classid: parseInt(homeworkInfo.classid), title: homeworkInfo.title, content: homeworkInfo.content, submitTimeString: "2023-11-24 23:59:29", attachmentName: "", default_score: 22}).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getDuplicateReport({ commit, state }, filetoken){
+    return new Promise((resolve, reject) => {
+      getDuplicateReport(filetoken, state.token).then(response => {
+        const { data } = response
+        window.console.log(JSON.stringify(response))
         resolve(data)
       }).catch(error => {
         reject(error)

@@ -207,6 +207,19 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/duplicateChecking',
+    component: Layout,
+    hidden: false,
+    children: [
+      {
+        path: 'duplicateChecking',
+        component: () => import('@/views/duplicate-checking/index'),
+        name: 'DuplicateChecking',
+        meta: { title: '作业查重', icon: 'form', noCache: true }
+      }
+    ]
+  },
   // {
   //   path: '/permission',
   //   component: Layout,
