@@ -32,4 +32,10 @@ public class PostPojo {
 
     @TableField(value = "time")
     private Date time;
+
+    @TableField(value = "pic")
+    private String pic;
+
+    @TableField(value = "name")
+    private String name;
 }

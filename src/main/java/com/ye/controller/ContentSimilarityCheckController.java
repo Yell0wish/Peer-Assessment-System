@@ -37,10 +37,11 @@ public class ContentSimilarityCheckController {
     public String ContentCheck(@RequestParam("fileA") MultipartFile fileA,
                                @RequestParam("fileB") MultipartFile fileB) throws IOException, InterruptedException {
         synchronized (lock) {        // 只允许pdf word excel txt rtf文件
-            if (fileA.getContentType() == null || !(fileA.getContentType().contains("pdf") || fileA.getContentType().contains("word") || fileA.getContentType().contains("excel") || fileA.getContentType().contains("txt") || fileA.getContentType().contains("rtf"))) {
+            System.out.println(fileA.getContentType());
+            if (fileA.getContentType() == null || !(fileA.getContentType().contains("pdf") || fileA.getContentType().contains("word") || fileA.getContentType().contains("excel") || fileA.getContentType().contains("txt") || fileA.getContentType().contains("rtf") || fileA.getContentType().contains("text"))) {
                 return Result.defeat("文件A格式不正确, 只允许pdf word excel txt rtf文件");
             }
-            if (fileB.getContentType() == null || !(fileB.getContentType().contains("pdf") || fileB.getContentType().contains("word") || fileB.getContentType().contains("excel") || fileB.getContentType().contains("txt") || fileB.getContentType().contains("rtf"))) {
+            if (fileB.getContentType() == null || !(fileB.getContentType().contains("pdf") || fileB.getContentType().contains("word") || fileB.getContentType().contains("excel") || fileB.getContentType().contains("txt") || fileB.getContentType().contains("rtf") || fileB.getContentType().contains("text"))) {
                 return Result.defeat("文件B格式不正确, 只允许pdf word excel txt rtf文件");
             }
             String localPathA = "C:\\Users\\Yellowish\\Desktop\\new\\testA";
@@ -76,7 +77,7 @@ public class ContentSimilarityCheckController {
             return Result.defeat("checkToken不正确");
         }
         byte[] bytes = Files.readAllBytes(Paths.get("C:\\Users\\Yellowish\\Desktop\\new\\result.zip"));
-        return Result.success("result.zip", bytes, response);
+        return Result.success("查重报告.zip", bytes, response);
     }
 
 

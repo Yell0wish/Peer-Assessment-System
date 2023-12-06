@@ -70,4 +70,8 @@ public class UserService {
     public UserInformationPublicPojo getPublicInformation(int userid){
         return userDao.getPublcInformation(userid);
     }
+
+    public String getNameByID(int userid) {
+        return userDao.selectById(userid).getUsername();
+    }
 }

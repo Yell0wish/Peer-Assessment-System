@@ -87,8 +87,8 @@ class PeerAssessmentSystemApplicationTests {
 //        System.out.println(correctService.getAllocatedList(10007));
 //        System.out.println(CheckManager.INSTANCE.getMachineCode());
 //        System.out.println(CheckManager.INSTANCE.getMachineCode());
-        CheckManager.INSTANCE.setRegCode("wNapGy/uhgE+rv5BsW4gcSiL0qFHV1/xXVNbuKI91TdLKAKW7afYGrQD9YDRBQC6ixvYQuMDj2iBNF4CQ+oLWcWWQBV+kSpX/s788zBOvN7vfhdP/L0Neu17B3dulsPT3cMp0TzSSzOBRsCGA5IE5ipAdFLczrREL0UEdjxJivok1HNzTdllFHvw4Nxnm7iMp/H/g6T28QzQPhV2rNRxZ6fBZMPcXzpCf/Uk9fnh/XBCkFXEypcPZV65/mY5lMTA9KgK8MrcQmt63ARYx+P5GjMBI5Lvob9YCiQF4iGdi5S2+tmciqrOpnb7uZ8//XQoXTisxgLWAP40rT7/mmSsQ54Y3V1op2I5iU7wMMCIpklJC54TzTvXvPfmUcwx+lqZQ1EpPNoHQ9hbJq/05EgIgw/lJM2vUAbyHHfz8ShsfeGRJXQjIIxS1Sil3XMBABWp4buR34onla9RICq60+BthP9SaB8unCQ2S0ymxL9DRUo=");
-        System.out.println(EasyStarter.check(new File("C:\\Users\\Yellowish\\Desktop\\new\\new"), new File("C:\\Users\\Yellowish\\Desktop\\new\\old"), "C:\\Users\\Yellowish\\Desktop\\new\\result"));
+//        CheckManager.INSTANCE.setRegCode("wNapGy/uhgE+rv5BsW4gcSiL0qFHV1/xXVNbuKI91TdLKAKW7afYGrQD9YDRBQC6ixvYQuMDj2iBNF4CQ+oLWcWWQBV+kSpX/s788zBOvN7vfhdP/L0Neu17B3dulsPT3cMp0TzSSzOBRsCGA5IE5ipAdFLczrREL0UEdjxJivok1HNzTdllFHvw4Nxnm7iMp/H/g6T28QzQPhV2rNRxZ6fBZMPcXzpCf/Uk9fnh/XBCkFXEypcPZV65/mY5lMTA9KgK8MrcQmt63ARYx+P5GjMBI5Lvob9YCiQF4iGdi5S2+tmciqrOpnb7uZ8//XQoXTisxgLWAP40rT7/mmSsQ54Y3V1op2I5iU7wMMCIpklJC54TzTvXvPfmUcwx+lqZQ1EpPNoHQ9hbJq/05EgIgw/lJM2vUAbyHHfz8ShsfeGRJXQjIIxS1Sil3XMBABWp4buR34onla9RICq60+BthP9SaB8unCQ2S0ymxL9DRUo=");
+        // System.out.println(EasyStarter.check(new File("C:\\Users\\Yellowish\\Desktop\\new\\new"), new File("C:\\Users\\Yellowish\\Desktop\\new\\old"), "C:\\Users\\Yellowish\\Desktop\\new\\result"));
 
 
 
