@@ -1,17 +1,21 @@
 <template>
-  <el-upload
-    class="pop-upload"
-    ref="upload"
-    action="http://192.168.1.13:8080/"
-    :file-list="fileList"
-    :auto-upload="false"
-    :multiple="true"
-    :on-change="handleChange"
-    :on-remove="handleRemove"
-  >
-    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-    <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
-  </el-upload>
+  <div class="page-box">
+    <el-card>
+      <el-upload
+          class="pop-upload"
+          ref="upload"
+          action="http://192.168.1.13:8080/"
+          :file-list="fileList"
+          :auto-upload="false"
+          :multiple="true"
+          :on-change="handleChange"
+          :on-remove="handleRemove"
+      >
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+      </el-upload>
+    </el-card>
+  </div>
 </template>
 
 <script>
@@ -42,10 +46,7 @@ export default {
       // 你可以使用FormData.append来添加键/值对到表单里面；
       formData.append('fileA', this.fileList[0].raw);
       formData.append('fileB', this.fileList[1].raw);
-      // 添加自定义参数，不传可删除
-      formData.append('parentId', '49')
-      formData.append('uploadType', '备料单')
-      formData.append('versions', 'v4.0')
+
 
       //自定义的接口也可以用ajax或者自己封装的接口
       request({
@@ -61,7 +62,7 @@ export default {
           this.$message.success('上传成功');
           // this.$store.dispatch("user/getDuplicateReport", res.data.token)
           const downloadLink = document.createElement('a');
-          downloadLink.href = `http://192.168.1.13:8080/getContentCheck?checkToken=${res.data.token}`; // 替换为实际的文件下载链接
+          downloadLink.href = `http://192.168.215.88:8080/getContentCheck?checkToken=${res.data.token}`; // 替换为实际的文件下载链接
           downloadLink.download = '查重报告';
           downloadLink.click();
         } else {
@@ -74,3 +75,16 @@ export default {
   },
 };
 </script>
+
+<style>
+  .page-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .el-card{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+</style>

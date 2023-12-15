@@ -192,6 +192,20 @@ export const asyncRoutes = [
         meta: { title: '作业统计信息', noCache: true, activeMenu: '/classList'},
         hidden: true,
       },
+      {
+        path: 'publishPost/:id',
+        component: () => import('@/views/class-info/teacher/post-editor.vue'),
+        name: 'PublishPost',
+        meta: { title: '发布讨论贴', icon: 'form', noCache: true, activeMenu: '/classList' },
+        hidden: true
+      },
+      {
+        path: 'postDetail/:classid/:postid',
+        component: () => import('@/views/class-info/teacher/post-detail.vue'),
+        name: 'PostDetail',
+        meta: { title: '发布讨论贴', icon: 'form', noCache: true, activeMenu: '/classList' },
+        hidden: true
+      },
     ]
   },
   {

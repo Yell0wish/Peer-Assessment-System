@@ -23,6 +23,36 @@ export function mylogin(data) {
   })
 }
 
+export function publishPost(data) {
+  return request({
+    url: '/publishPost',
+    method: 'post',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
+export function publishComment(data) {
+  return request({
+    url: '/publishComment',
+    method: 'post',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
 export function resetPassword(data) {
   return request({
     url: '/resetPassword',
@@ -184,6 +214,31 @@ export function getHomeworkList(userid, token, classid) {
       classid: classid,
       userid: userid,
       token: token
+    }
+  })
+}
+
+export function getPostList(userid, token, classid) {
+  return request({
+    url: '/getPostList',
+    method: 'get',
+    params: {
+      classid: classid,
+      userid: userid,
+      token: token,
+    }
+  })
+}
+
+export function getPostListAndComments(userid, token, classid, postid) {
+  return request({
+    url: '/getPostDetailsAndComments',
+    method: 'get',
+    params: {
+      userid: userid,
+      token: token,
+      classid: classid,
+      postid: postid,
     }
   })
 }

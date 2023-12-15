@@ -13,7 +13,14 @@ import {
   getAccessCode,
   getAllTeachingClasses,
   getAllListeningClasses,
-  getStuentList, getHomeworkList, getHomeworkDetail, assignHomework, getDuplicateReport
+  getStuentList,
+  getHomeworkList,
+  getHomeworkDetail,
+  assignHomework,
+  getDuplicateReport,
+  publishPost,
+  getPostList,
+  getPostListAndComments, publishComment
 } from '@/api/user'
 import {getToken, setToken, removeToken, getUserid, setUserid} from '@/utils/auth'
 import router, { resetRouter } from '@/router'
@@ -259,9 +266,79 @@ const actions = {
       })
     })
   },
+
+  publishPost({ commit, state }, postInfo ) {
+    const { classid, title, content } = postInfo
+    return new Promise((resolve, reject) => {
+      publishPost({userid: parseInt(state.userid), token: state.token, classid: parseInt(classid), title: title, content: content, pic: ''}).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  publishComment({ commit, state }, postInfo ) {
+    const { classid, postid, content } = postInfo
+    return new Promise((resolve, reject) => {
+      publishComment({userid: parseInt(state.userid), token: state.token, classid: parseInt(classid), postid: postid, content: content, pic: ''}).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getPostList({ commit, state }, classid) {
+    return new Promise((resolve, reject) => {
+      getPostList(parseInt(state.userid), state.token, parseInt(classid)).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getPostListAndComments({ commit, state }, postinfo) {
+    const { classid, postid } = postinfo
+    return new Promise((resolve, reject) => {
+      getPostListAndComments(parseInt(state.userid), state.token, parseInt(classid), parseInt(postid)).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
   getHomeworkList({ commit, state }, classid) {
     return new Promise((resolve, reject) => {
       getHomeworkList(parseInt(state.userid), state.token, parseInt(classid)).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(data.token)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  getPostDetail({ commit, state }, homeworkinfo) {
+    console.log(JSON.stringify(homeworkinfo))
+    return new Promise((resolve, reject) => {
+      getHomeworkDetail(parseInt(state.userid), state.token, parseInt(homeworkinfo.classid), parseInt(homeworkinfo.homeworkid)).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
