@@ -179,10 +179,17 @@ export const asyncRoutes = [
         hidden: true,
       },
       {
-        path: '/commitHomework',
+        path: '/commitHomework/:homeworkid',
         component: () => import('@/views/class-info/student/CommitHomework'),
         name: 'CommitHomework',
         meta: { title: '提交作业', noCache: true, activeMenu: '/classList'},
+        hidden: true,
+      },
+      {
+        path: '/submittedhomework/:homeworkid',
+        component: () => import('@/views/class-info/teacher/submitted-homeworks'),
+        name: 'SubmittedHomework',
+        meta: { title: '已提交作业', noCache: true, activeMenu: '/classList'},
         hidden: true,
       },
       {
@@ -218,6 +225,19 @@ export const asyncRoutes = [
         component: () => import('@/views/mutual-evaluation/index'),
         name: 'Evaluate',
         meta: { title: '作业互评', icon: 'form', noCache: true }
+      }
+    ]
+  },
+  {
+    path: '/re-evaluate',
+    component: Layout,
+    hidden: false,
+    children: [
+      {
+        path: 're-evaluate',
+        component: () => import('@/views/re-evaluate/index'),
+        name: 'ReEvaluate',
+        meta: { title: '待复核作业', icon: 'form', noCache: true }
       }
     ]
   },

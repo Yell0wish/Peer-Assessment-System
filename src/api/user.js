@@ -38,10 +38,129 @@ export function publishPost(data) {
   })
 }
 
+export function myGetInfo(token, userid) {
+  return request({
+    url: '/getInformation',
+    method: 'get',
+    params: {
+      token: token,
+      userid: userid
+    }
+  })
+}
+
+export function addCommit(formData) {
+  let data = new FormData();
+  for (let key in formData) {
+    data.append(key, formData[key]);
+  }
+  return request({
+    url: '/addSubmit',
+    method: 'post',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'multipart/form-data; boundary=--------------------------447331697369778982143514'
+    },
+    data: data
+  })
+}
+
+export function addResource(formData) {
+  let data = new FormData();
+  for (let key in formData) {
+    data.append(key, formData[key]);
+  }
+  return request({
+    url: '/addClassSource',
+    method: 'post',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'multipart/form-data; boundary=--------------------------447331697369778982143514'
+    },
+    data: data
+  })
+}
+
 export function publishComment(data) {
   return request({
     url: '/publishComment',
     method: 'post',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
+export function postReassessment(data) {
+  return request({
+    url: '/postReassessment',
+    method: 'post',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
+export function correctHomework(data) {
+  return request({
+    url: '/correctHomework',
+    method: 'post',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
+export function recorrectHomework(data) {
+  return request({
+    url: '/reassessSubmit',
+    method: 'post',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
+
+export function modifyPassword(data) {
+  return request({
+    url: '/modifyPassword',
+    method: 'put',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
+export function modifyName(data) {
+  return request({
+    url: '/modifyName',
+    method: 'put',
     transformRequest: [function (data) {
       let ret = '';
       for (let it in data) {
@@ -77,6 +196,18 @@ export function sendResetVerifyCode(email) {
     }
   })
 }
+
+export function getInformation(token, userid) {
+  return request({
+    url: '/getInformation',
+    method: 'get',
+    params: {
+      token: token,
+      userid: userid,
+    }
+  })
+}
+
 
 export function sendRegisterVerifyCode(email) {
   return request({
@@ -115,6 +246,91 @@ export function createClass(data) {
       return ret
     }],
     data
+  })
+}
+
+export function setAllocate(data) {
+  return request({
+    url: '/allocateHomework',
+    method: 'post',
+    transformRequest: [function (data) {
+      let ret = '';
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    data
+  })
+}
+
+export function getSubmitList(homeworkid, token, userid) {
+  return request({
+    url: '/getSubmitList',
+    method: 'get',
+    params: {
+      homeworkid: parseInt(homeworkid),
+      token: token,
+      userid: parseInt(userid)
+    }
+  })
+}
+export function getReassessSubmitList(token, userid) {
+  return request({
+    url: '/getReassessmentList',
+    method: 'get',
+    params: {
+      token: token,
+      userid: parseInt(userid)
+    }
+  })
+}
+
+
+export function getSubmitListStudent(homeworkid, token, userid) {
+  return request({
+    url: '/getSubmitListStudent',
+    method: 'get',
+    params: {
+      homeworkid: parseInt(homeworkid),
+      token: token,
+      userid: parseInt(userid)
+    }
+  })
+}
+
+export function getHomeworkStatisticStage(homeworkid, token, userid) {
+  return request({
+    url: '/getHomeworkStatisticStage',
+    method: 'get',
+    params: {
+      homeworkid: parseInt(homeworkid),
+      token: token,
+      userid: parseInt(userid)
+    }
+  })
+}
+export function getSourceList(classid, token, userid) {
+  return request({
+    url: '/getResourceList',
+    method: 'get',
+    params: {
+      classid: parseInt(classid),
+      token: token,
+      userid: parseInt(userid)
+    }
+  })
+}
+
+
+export function getEvaluateList(token, userid) {
+  return request({
+    url: '/getAllocatedList',
+    method: 'get',
+    params: {
+      token: token,
+      userid: parseInt(userid)
+    }
   })
 }
 
@@ -252,18 +468,6 @@ export function getHomeworkDetail(userid, token, classid, homeworkid) {
       userid: userid,
       token: token,
       homeworkid: homeworkid,
-    }
-  })
-}
-
-
-export function myGetInfo(token, userid) {
-  return request({
-    url: '/getInformation',
-    method: 'get',
-    params: {
-      token: token,
-      userid: userid
     }
   })
 }

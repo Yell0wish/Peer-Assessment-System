@@ -74,7 +74,7 @@
       <!--          </el-tag>-->
       <!--        </template>-->
       <!--      </el-table-column>-->
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleClickDetail(row)">
             <!--            {{ $t('table.edit') }}-->
@@ -83,6 +83,10 @@
           <el-button type="primary" size="mini" @click="handleCommit(row)">
             <!--            {{ $t('table.edit') }}-->
             提交作业
+          </el-button>
+          <el-button type="danger" size="mini" @click="handleReevl(row)">
+            <!--            {{ $t('table.edit') }}-->
+            申请复核
           </el-button>
           <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
           <!--            {{ $t('table.publish') }}-->
@@ -239,8 +243,11 @@ export default {
       this.$router.push({name:'HomeworkStatistic',params: {classid: rowData.classid, homeworkid: rowData.homeworkid}})
     },
     handleCommit(rowData) {
-      console.log(JSON.stringify(rowData.classid))
-      this.$router.push({name:'HomeworkDetail',params: {classid: rowData.classid, homeworkid: rowData.homeworkid}})
+      this.$router.push({name:'CommitHomework',params: {homeworkid: rowData.homeworkid}})
+    },
+    handleReevl(rowData) {
+      console.log(JSON.stringify(rowData))
+      this.$store.dispatch('user/postReassessment', rowData.homeworkid)
     },
     getList() {
       this.listLoading = true

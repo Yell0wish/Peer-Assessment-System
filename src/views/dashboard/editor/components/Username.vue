@@ -4,7 +4,7 @@
       <el-input  v-model.trim="user.name" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submit" icon="el-icon-edit">更改信息</el-button>
+      <el-button type="primary" @click="submit" icon="el-icon-edit">修改用户名</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -24,8 +24,10 @@ export default {
   },
   methods: {
     submit() {
+      console.log(this.user.name)
+      this.$store.dispatch("user/modifyPassword", this.user.name)
       this.$message({
-        message: 'User information has been updated successfully',
+        message: '成功修改用户名',
         type: 'success',
         duration: 5 * 1000
       })

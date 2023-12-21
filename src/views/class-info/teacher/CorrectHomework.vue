@@ -1,29 +1,26 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        {{ $t('table.reviewer') }}
-      </el-checkbox>
-    </div>
+<!--    <div class="filter-container">-->
+<!--      <el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />-->
+<!--      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">-->
+<!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+<!--      </el-select>-->
+<!--      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px">-->
+<!--        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />-->
+<!--      </el-select>-->
+<!--      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
+<!--        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
+<!--      </el-select>-->
+<!--      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">-->
+<!--        {{ $t('table.search') }}-->
+<!--      </el-button>-->
+<!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
+<!--        {{ $t('table.add') }}-->
+<!--      </el-button>-->
+<!--      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
+<!--        {{ $t('table.export') }}-->
+<!--      </el-button>-->
+<!--    </div>-->
 
     <el-table
       :key="tableKey"
@@ -74,15 +71,18 @@
 <!--          </el-tag>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleClickDetail(row)">
 <!--            {{ $t('table.edit') }}-->
-            查看作业
+            查看已提交作业
           </el-button>
           <el-button type="primary" size="mini" @click="handleClickDetail(row)">
             <!--            {{ $t('table.edit') }}-->
             批改作业
+          </el-button>
+          <el-button type="primary" size="mini" @click="handleAllocate(row)">
+            分配作业
           </el-button>
 <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
 <!--            {{ $t('table.publish') }}-->
@@ -143,6 +143,50 @@
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
       </span>
+    </el-dialog>
+    <el-dialog :visible.sync="dialogVisible" title="分配作业批改方式" width="60%">
+      <el-form ref="form" :model="form" label-width="120px">
+        <el-row>
+          <el-col :span="8">
+            <!-- 日期和时间选择器 -->
+            <el-form-item label="批改截止时间">
+              <el-date-picker
+                  v-model="form.correctTimeString"
+                  type="datetime"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  placeholder="选择日期和时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <!-- 分数方法（0-1之间的小数） -->
+            <el-form-item label="评分权重">
+              <el-input-number
+                  v-model="form.scoreMethod"
+                  :min="0"
+                  :max="1"
+                  :step="0.1"
+                  placeholder="请输入教师评分占比">
+              </el-input-number>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <!-- 每个人校正次数 -->
+            <el-form-item label="每人批改份数">
+              <el-select v-model="form.everyoneCorrectNum" placeholder="请选择次数">
+                <el-option v-for="num in 10" :key="num" :label="num" :value="num"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 表单提交按钮 -->
+
+          <el-button type="primary" @click="onSubmit">提交</el-button>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -228,15 +272,28 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      dialogVisible: false, // 控制对话框的显示
+      form: {
+        // 表单数据结构
+        correctTimeString: '',
+        scoreMethod: 0,
+        everyoneCorrectNum: 1
+      },
+      currentHomeworkId: null,
     }
   },
   created() {
   },
   methods: {
+    onSubmit() {
+      this.dialogVisible = false;
+      console.log('提交的表单数据:', this.currentHomeworkId);
+      this.$store.dispatch("user/setAllocate", {homeworkid: this.currentHomeworkId, correctTimeString: this.form.correctTimeString, scoreMethod: this.form.scoreMethod, everyoneCorrectNum: this.form.everyoneCorrectNum})
+    },
     handleClickDetail(rowData) {
-      console.log(JSON.stringify(rowData.classid))
-      this.$router.push({name:'HomeworkDetail',params: {classid: rowData.classid, homeworkid: rowData.homeworkid}})
+      console.log(JSON.stringify(rowData))
+      this.$router.push({name:'SubmittedHomework',params: {homeworkid: rowData.homeworkid}})
     },
     getList() {
       this.listLoading = true
@@ -348,6 +405,11 @@ export default {
         this.pvData = response.data.pvData
         this.dialogPvVisible = true
       })
+    },
+    handleAllocate(row) {
+      this.currentHomeworkId = row.homeworkid
+      console.log('提交的表单数据:', this.currentHomeworkId);
+      this.dialogVisible = true;
     },
     handleDownload() {
       this.downloadLoading = true

@@ -4,7 +4,6 @@
       <el-row>
         <el-button @click="showJoinDialog" type="primary" icon="el-icon-s-promotion">加入班级</el-button>
         <el-button @click="showCreateDialog" type="primary" icon="el-icon-s-opportunity">创建班级</el-button>
-        <el-button @click="showGetInviteCodeDialog" type="primary" icon="el-icon-share">获取班级邀请码</el-button>
       </el-row>
     </el-row>
     <el-tabs v-model="activeTab">

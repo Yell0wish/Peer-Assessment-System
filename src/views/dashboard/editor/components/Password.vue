@@ -7,31 +7,32 @@
       <el-input v-model.trim="user.newPassword" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submit" icon="el-icon-edit">更改信息</el-button>
+      <el-button type="primary" @click="submit" icon="el-icon-edit">修改密码</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
 export default {
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          oldPassword: '',
-          newPassword: ''
-        }
+  data() {
+    return {
+      currentRole: 'editorDashboard',
+      user: {
+        oldPassword: '',
+        newPassword: '',
       }
     }
   },
   methods: {
     submit() {
-      this.$message({
-        message: 'User information has been updated successfully',
-        type: 'success',
-        duration: 5 * 1000
-      })
+      this.$store.dispatch("user/modifyPassword", {oldPassword: this.user.oldPassword, newPassword: this.user.newPassword})
+        .then(() => {
+          this.$message({
+            message: '修改密码成功',
+            type: 'success',
+            duration: 5 * 1000
+          })
+        })
     }
   }
 }

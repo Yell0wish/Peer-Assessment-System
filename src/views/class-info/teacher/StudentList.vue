@@ -1,26 +1,42 @@
 <template>
   <div class="app-container">
-    <el-table v-loading="listLoading" :data="studentList" border fit highlight-current-row>
-      <el-table-column width="120px" align="center" label="Author">
-        <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
+<!--    <el-table v-loading="listLoading" :data="studentList" border style="width: 100%">-->
 
-      <el-table-column align="center" label="Actions" width="120">
-        <template slot-scope="scope">
-          <router-link :to="'/example/edit/'+scope.row.id">
-            <el-button type="danger" size="small" icon="el-icon-error">
-              踢出班级
-            </el-button>
-          </router-link>
-        </template>
+<!--      &lt;!&ndash; Author Column &ndash;&gt;-->
+<!--      <el-table-column prop="name" label="Author" width="120px" align="center"></el-table-column>-->
+
+<!--      &lt;!&ndash; Actions Column &ndash;&gt;-->
+<!--      <el-table-column label="Actions" width="180px" align="center">-->
+<!--        <template slot-scope="scope">-->
+<!--          <router-link :to="'/example/edit/'+scope.row.id">-->
+<!--            <el-button type="danger" size="small" icon="el-icon-error">-->
+<!--              踢出班级-->
+<!--            </el-button>-->
+<!--          </router-link>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+
+<!--    </el-table>-->
+
+<!--    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />-->
+    <el-table
+      :data="studentList"
+      border
+      style="width: 25%">
+      <el-table-column
+        prop="name"
+        label="姓名"
+        width="200">
+      </el-table-column>
+      <el-table-column label="操作" width="200">
+        <el-button type="danger" size="small" icon="el-icon-error" on-buttong>
+          踢出班级
+        </el-button>
       </el-table-column>
     </el-table>
-
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
 </template>
+
 
 <script>
 import { fetchList } from '@/api/article'

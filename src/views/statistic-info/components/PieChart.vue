@@ -21,7 +21,8 @@ export default {
     height: {
       type: String,
       default: '300px'
-    }
+    },
+    chartData: {}
   },
   data() {
     return {
@@ -40,8 +41,24 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(newVal) {
+        if (this.chart) {
+          this.chart.setOption({
+            series: [{
+              data: newVal
+            }]
+          });
+        }
+      }
+    }
+  },
+
   methods: {
     initChart() {
+      console.log("mj",this.chartData)
       this.chart = echarts.init(this.$el, 'macarons')
 
       this.chart.setOption({
@@ -56,18 +73,12 @@ export default {
         },
         series: [
           {
-            name: 'WEEKLY WRITE ARTICLES',
+            name: '分数段人数',
             type: 'pie',
             roseType: 'radius',
             radius: [15, 95],
-            center: ['50%', '38%'],
-            data: [
-              { value: 320, name: '90分以上' },
-              { value: 240, name: '80分-90分' },
-              { value: 149, name: '70分-80分' },
-              { value: 100, name: '60分-70分' },
-              { value: 59, name: '60分以下' }
-            ],
+            center: ['50%', '50%'],
+            data: this.chartData,
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }

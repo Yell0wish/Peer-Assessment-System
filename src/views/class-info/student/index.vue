@@ -4,16 +4,15 @@
       <el-button type="primary" icon="el-icon-s-order">发布讨论贴</el-button>
     </router-link>
     <el-tabs v-model="activeTab">
-      <el-tab-pane label="待完成作业" name="todo">
+      <el-tab-pane label="作业列表" name="todo">
         <homework-list :homework-list="hwList"/>
-      </el-tab-pane>
-      <el-tab-pane label="已完成作业" name="down">
-        <homework-list :homework-list="hwList" />
       </el-tab-pane>
       <el-tab-pane label="课程讨论区" name="discussion">
         <question-list :table-data="postList" />
       </el-tab-pane>
-
+      <el-tab-pane label="课程资源库" name="sources">
+        <source-list/>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -21,9 +20,10 @@
 <script>
 import HomeworkList from "./HomeworkList";
 import QuestionList from "@/views/TestComments/components/QuestionList.vue";
+import SourceList from "@/views/class-info/student/SourceList.vue";
 export default {
   name: "studyingClass",
-  components : {QuestionList, HomeworkList },
+  components : {SourceList, QuestionList, HomeworkList },
   data () {
     return {
       hwList: [],

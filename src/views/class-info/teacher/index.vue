@@ -1,12 +1,13 @@
 <template>
   <div class="app-container">
     <el-row>
-        <router-link :to="{name: 'AssignHomework', param: this.$route.params}">
-            <el-button type="primary" icon="el-icon-s-order">发布作业</el-button>
-        </router-link>
-        <router-link :to="{name: 'PublishPost', param: this.$route.params}">
-          <el-button type="primary" icon="el-icon-s-order">发布讨论贴</el-button>
-        </router-link>
+      <router-link :to="{name: 'AssignHomework', param: this.$route.params}" style="margin-right: 8px;">
+        <el-button type="primary" icon="el-icon-s-order">发布作业</el-button>
+      </router-link>
+      <router-link :to="{name: 'PublishPost', param: this.$route.params}" style="margin-right: 8px;">
+        <el-button type="primary" icon="el-icon-s-order">发布讨论贴</el-button>
+      </router-link>
+      <el-button @click="showGetInviteCodeDialog" type="primary" icon="el-icon-share">获取班级邀请码</el-button>
     </el-row>
     <el-tabs v-model="activeTab">
         <el-tab-pane label="作业列表" name="waitingForCorrect">
@@ -18,6 +19,9 @@
         <el-tab-pane label="课程讨论区" name="discussion">
             <question-list :table-data="postList" />
         </el-tab-pane>
+      <el-tab-pane label="课程资源库" name="sources">
+        <source-list/>
+      </el-tab-pane>
 
     </el-tabs>
   </div>
@@ -28,15 +32,16 @@ import CorrectHomework from "./CorrectHomework.vue";
 import AssignHomework from "./AssignHomework.vue";
 import StudentList from "./StudentList.vue";
 import QuestionList from "@/views/TestComments/components/QuestionList.vue";
+import SourceList from "@/views/class-info/teacher/SourceList.vue";
 export default {
     name: "teachingClass",
-    components : { CorrectHomework, AssignHomework, StudentList, QuestionList },
+    components : { CorrectHomework, AssignHomework, StudentList, QuestionList, SourceList},
     data () {
       return {
         list: [],
         hwList: [],
         postList: [],
-        activeTab: "waitingForCorrect"
+        activeTab: "waitingForCorrect",
       }
     },
     created() {
@@ -68,7 +73,17 @@ export default {
                     postid: item.uuid,
                 }));
             })
-      }
+        console.log("学生列表：" + this.list)
+      },
+
+      showGetInviteCodeDialog() {
+        this.$store.dispatch('user/getAccessCode', this.$route.params.id)
+          .then(data => {
+            this.$alert('请记好邀请码：'+data.accessCode, '班级邀请码', {
+              confirmButtonText: '确定',
+            });
+          })
+      },
     }
 }
 

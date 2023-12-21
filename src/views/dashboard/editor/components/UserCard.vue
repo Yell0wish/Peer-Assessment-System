@@ -81,6 +81,11 @@ export default {
       }
     }
   },
+  computed: {
+    created() {
+      this.fetchData()
+    },
+  },
   methods: {
 
   }

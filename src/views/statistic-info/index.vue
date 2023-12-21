@@ -3,7 +3,7 @@
     <el-col>
       <el-card shadow="hover" style="width: 100%;">
         <div slot="header" class="clearfix">
-          <span>作业评语</span>
+          <span>作业最终得分: {{ score }}</span>
           <el-button
               style="float: right; padding: 3px 0"
               type="text"
@@ -11,23 +11,16 @@
           >下载批改后作业</el-button
           >
         </div>
-        <div style="font-size: 18px;text-align: center; margin-top: 35px;">
-          明日复明日
-        </div>
-        <div style="font-size: 18px;text-align: center;">明日何其多</div>
-        <div style="font-size: 18px;text-align: center;">我生待明日</div>
-        <div style="font-size: 18px;text-align: center;">万事成蹉跎</div>
-        <div style="margin-top: 35px;"></div>
       </el-card>
     </el-col>
     <el-col>
       <el-card>
-        <PieChart></PieChart>
+        本次作业分数段统计：
       </el-card>
     </el-col>
     <el-col>
       <el-card>
-        <line-chart :chart-data="lineChartData" />
+        <PieChart :chartData="pieChartData" />
       </el-card>
     </el-col>
   </div>
@@ -60,6 +53,7 @@ const lineChartData = {
 }
 export default {
   components: {LineChart, PieChart},
+
   data() {
     return {
       deadline2: Date.now() + 1000 * 60 * 60 * 8,
@@ -67,16 +61,40 @@ export default {
       deadline4: Date.now() + (new Date().setHours(23, 59, 59) - Date.now()),
       deadline5: new Date("2023-05-06"),
       stop: true,
-      lineChartData: lineChartData.correctRate
+      score: null,
+      pieChartData: { },
     };
   },
+  created() {
+    this.fetchData()
+  },
   methods: {
+    transformChartData(dataArray) {
+      const scoreSegments = ['60分以下', '70分-80分', '60分-70分','80分-90分', '90分以上'];
+
+      return dataArray.map((value, index) => {
+        return {
+          value: value,
+          name: scoreSegments[index]
+        };
+      });
+    },
     clickFn() {
-      window.location.href = 'http://localhost:8080/甘特图.pdf'
+      this.fetchData()
     },
     add() {
       this.deadline3 = this.deadline3 + 1000 * 10;
     },
+    fetchData() {
+      this.$store.dispatch('user/getSubmitListStudent', this.$route.params.homeworkid).then((data) => {
+        this.score = data.homeworkresult[0].score
+      })
+      this.$store.dispatch('user/getStatistic', this.$route.params.homeworkid).then((data) => {
+
+        this.pieChartData = this.transformChartData(data.statisticStage)
+        console.log(JSON.stringify(this.pieChartData))
+      })
+    }
   },
 };
 </script>

@@ -62,7 +62,7 @@ export default {
           this.$message.success('上传成功');
           // this.$store.dispatch("user/getDuplicateReport", res.data.token)
           const downloadLink = document.createElement('a');
-          downloadLink.href = `http://192.168.215.88:8080/getContentCheck?checkToken=${res.data.token}`; // 替换为实际的文件下载链接
+          downloadLink.href = `http://192.168.1.13:8080/getContentCheck?checkToken=${res.data.token}`; // 替换为实际的文件下载链接
           downloadLink.download = '查重报告';
           downloadLink.click();
         } else {

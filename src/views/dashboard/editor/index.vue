@@ -6,7 +6,6 @@
         <el-col :span="6" :xs="24">
           <user-card :user="user" />
         </el-col>
-
         <el-col :span="18" :xs="24">
           <el-card>
             <el-tabs v-model="activeTab">
@@ -14,12 +13,11 @@
                 <username :user="user" />
               </el-tab-pane>
               <el-tab-pane label="修改密码" name="password">
-                <password :user="user" />
+                <password/>
               </el-tab-pane>
             </el-tabs>
           </el-card>
         </el-col>
-
       </el-row>
     </div>
   </div>
@@ -54,13 +52,17 @@ export default {
   },
   methods: {
     getUser() {
-      this.user = {
-        name: this.name,
-        role: this.roles.join(' | '),
-        email: 'admin@test.com',
-        avatar: this.avatar,
-        userid: this.userid,
-      }
+      this.$store.dispatch("user/getInformation")
+        .then((data) => {
+          console.log(JSON.stringify(data))
+          this.user = {
+            name: data.userInformation.username,
+            role: this.roles.join(' | '),
+            email: 'admin@test.com',
+            avatar: this.avatar,
+            userid: data.userInformation.uuid,
+          }
+        })
     }
   }
 }

@@ -2,9 +2,9 @@
   <div class="app-container">
     <el-table :data="allocatedList" style="width: 72%" border>
 
-      <el-table-column prop="userO" label="用户ID" width="180"></el-table-column>
-      <el-table-column prop="correctTime" label="评分截止时间" width="180"></el-table-column>
-      <el-table-column prop="title" label="作业标题" width="180"></el-table-column>
+      <el-table-column prop="submitID" label="用户ID" width="180"></el-table-column>
+      <el-table-column prop="time" label="评分截止时间" width="180"></el-table-column>
+      <el-table-column prop="uuid" label="作业ID" width="180"></el-table-column>
 
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
@@ -82,13 +82,13 @@ export default {
       console.log('作业 ID:', this.currentHomeworkId);
       // 在这里添加提交逻辑
       this.dialogVisible = false;
-      this.$store.dispatch('user/correctHomework', {correctid: this.currentHomeworkId, score: this.form.score, comment: this.form.comment})
+      this.$store.dispatch('user/reCorrectHomework', {correctid: this.currentHomeworkId, score: this.form.score, comment: this.form.comment})
     },
     fetchData() {
       console.log(this.$route.params.homeworkid)
-      this.$store.dispatch('user/getAllocatedList')
+      this.$store.dispatch('user/getReassessmentList')
           .then((data) => {
-            this.allocatedList = data.allocatedList;
+            this.allocatedList = data.reassessmentList;
             console.log(JSON.stringify(data))
           })
     },
