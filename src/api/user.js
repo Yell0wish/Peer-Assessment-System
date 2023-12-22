@@ -126,6 +126,33 @@ export function correctHomework(data) {
   })
 }
 
+export function deleteClass(data) {
+  const params = new URLSearchParams();
+  for (const key in data) {
+    params.append(key, data[key]);
+  }
+
+  return request({
+    url: '/deleteTeachingClass',
+    method: 'delete',
+    params: params
+  });
+}
+
+export function deleteHomework(data) {
+  const params = new URLSearchParams();
+  for (const key in data) {
+    params.append(key, data[key]);
+  }
+
+  return request({
+    url: '/deleteHomework',
+    method: 'delete',
+    params: params
+  });
+}
+
+
 export function recorrectHomework(data) {
   return request({
     url: '/reassessSubmit',

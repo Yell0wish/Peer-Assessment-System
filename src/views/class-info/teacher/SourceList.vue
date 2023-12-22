@@ -11,6 +11,7 @@
     >
       <el-button slot="trigger" size="small" type="primary">上传附件</el-button>
       <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">提交资源</el-button>
+      <el-button style="margin-left: 10px;" size="small" type="danger" @click="submitUpload">提交资源</el-button>
     </el-upload>
     <el-table :data="submitList" style="width: 73%" border>
       <!-- userid 列 -->

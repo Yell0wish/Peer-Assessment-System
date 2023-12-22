@@ -33,7 +33,7 @@ import {
   getSubmitListStudent,
   getHomeworkStatisticStage,
   getSourceList,
-  addResource, postReassessment, getReassessSubmitList, recorrectHomework
+  addResource, postReassessment, getReassessSubmitList, recorrectHomework, deleteClass, deleteHomework
 } from '@/api/user'
 import {getToken, setToken, removeToken, getUserid, setUserid} from '@/utils/auth'
 import router, { resetRouter } from '@/router'
@@ -334,6 +334,31 @@ const actions = {
       });
     });
   },
+
+  deleteClass({ commit }, classid) {
+    return new Promise((resolve, reject) => {
+      deleteClass({userid: state.userid, token: state.token, classid:classid}).then(response => {
+        const { data } = response;
+        resolve();
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  },
+
+  deleteHomework({ commit }, hwinfo) {
+    const { classid, homeworkid } = hwinfo
+    console.log("classid:", classid)
+    return new Promise((resolve, reject) => {
+      deleteHomework({userid: state.userid, token: state.token, classid:classid, homeworkid: homeworkid}).then(response => {
+        const { data } = response;
+        resolve();
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  },
+
   reCorrectHomework({ commit }, correctInfo) {
     const { correctid, score, comment } = correctInfo;
     return new Promise((resolve, reject) => {

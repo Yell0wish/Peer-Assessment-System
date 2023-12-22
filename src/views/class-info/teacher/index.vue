@@ -7,7 +7,9 @@
       <router-link :to="{name: 'PublishPost', param: this.$route.params}" style="margin-right: 8px;">
         <el-button type="primary" icon="el-icon-s-order">发布讨论贴</el-button>
       </router-link>
+
       <el-button @click="showGetInviteCodeDialog" type="primary" icon="el-icon-share">获取班级邀请码</el-button>
+      <el-button type="danger" icon="el-icon-s-order" @click="handleDelete">删除班级</el-button>
     </el-row>
     <el-tabs v-model="activeTab">
         <el-tab-pane label="作业列表" name="waitingForCorrect">
@@ -83,6 +85,9 @@ export default {
               confirmButtonText: '确定',
             });
           })
+      },
+      handleDelete() {
+        this.$store.dispatch('user/deleteClass', this.$route.params.id)
       },
     }
 }

@@ -71,7 +71,7 @@
 <!--          </el-tag>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-      <el-table-column :label="$t('table.actions')" align="center" width="300" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" align="center" width="400" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleClickDetail(row)">
 <!--            {{ $t('table.edit') }}-->
@@ -83,6 +83,9 @@
           </el-button>
           <el-button type="primary" size="mini" @click="handleAllocate(row)">
             分配作业
+          </el-button>
+          <el-button type="danger" size="mini" @click="handleClickDel(row)">
+            删除作业
           </el-button>
 <!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
 <!--            {{ $t('table.publish') }}-->
@@ -410,6 +413,10 @@ export default {
       this.currentHomeworkId = row.homeworkid
       console.log('提交的表单数据:', this.currentHomeworkId);
       this.dialogVisible = true;
+    },
+    handleClickDel(row) {
+      console.log(JSON.stringify({homeworkid: row.homeworkid, classid: this.$route.params.id}))
+      this.$store.dispatch('user/deleteHomework', {homeworkid: row.homeworkid, classid: this.$route.params.id})
     },
     handleDownload() {
       this.downloadLoading = true
